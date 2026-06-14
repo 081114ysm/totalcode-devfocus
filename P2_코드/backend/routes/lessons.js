@@ -1,0 +1,1 @@
+import express from "express"; import { authMiddleware } from "../middleware/auth.js"; import { getLesson } from "../controllers/lessons.js"; const router=express.Router(); router.get("/:lessonId",authMiddleware,getLesson); export default router;

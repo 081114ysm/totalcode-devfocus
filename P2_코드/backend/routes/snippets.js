@@ -1,0 +1,2 @@
+import express from "express"; import { authMiddleware } from "../middleware/auth.js"; import { listSnippets,listLanguages,getSnippet,createSnippet,updateSnippet,deleteSnippet } from "../controllers/snippets.js";
+const router=express.Router(); router.use(authMiddleware); router.get("/",listSnippets); router.get("/languages",listLanguages); router.post("/",createSnippet); router.get("/:id",getSnippet); router.patch("/:id",updateSnippet); router.delete("/:id",deleteSnippet); export default router;

@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.omc/
+out/
+build/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+mysql-data/
+P2_코드/frontend/.next/
+제출물/*.bundle

@@ -1,0 +1,2 @@
+import express from "express"; import { authMiddleware } from "../middleware/auth.js"; import { validateQuestion,validateAnswer } from "../middleware/validate.js"; import { listQuestions,createQuestion,getQuestion,createAnswer } from "../controllers/qna.js";
+const router=express.Router(); router.get("/",listQuestions); router.post("/",authMiddleware,validateQuestion,createQuestion); router.post("/answer",authMiddleware,validateAnswer,createAnswer); router.get("/:id",getQuestion); export default router;

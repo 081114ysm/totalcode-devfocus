@@ -1,0 +1,1 @@
+import express from "express"; import { subscribe,unsubscribe } from "../controllers/subscriptions.js"; const router=express.Router(); router.post("/",subscribe); router.delete("/:token",unsubscribe); export default router;

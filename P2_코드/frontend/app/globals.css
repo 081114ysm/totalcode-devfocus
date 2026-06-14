@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #FF385C;
+  --accent-light: #FFF0F3;
+  --dark: #222222;
+  --gray: #717171;
+  --light-gray: #F7F7F7;
+  --bg: #ffffff;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--dark);
+  font-family: Inter, Pretendard, 'Malgun Gothic', system-ui, sans-serif;
+}
+
+button, a { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #ff8da2; outline-offset: 2px; }
