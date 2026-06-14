@@ -76,7 +76,7 @@ export default function FocusPage() {
     <div className="min-h-screen bg-white">
       <div className="bg-[#F7F7F7] py-16 px-8">
         <div className="max-w-2xl mx-auto">
-          <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+          <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
             Focus
           </p>
           <h1
@@ -103,7 +103,7 @@ export default function FocusPage() {
             onClick={isRunning ? handleEnd : handleStart}
             className={`px-10 py-4 rounded-full text-white font-semibold text-base transition-colors ${
               isRunning
-                ? "bg-[#FF385C] hover:bg-[#e0314f]"
+                ? "bg-[#00C471] hover:bg-[#00A65A]"
                 : "bg-[#222222] hover:bg-[#3a3a3a]"
             }`}
           >
@@ -111,7 +111,7 @@ export default function FocusPage() {
           </button>
         </div>
 
-        <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+        <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
           History
         </p>
         <h2

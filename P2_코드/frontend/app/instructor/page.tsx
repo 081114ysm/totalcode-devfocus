@@ -122,14 +122,14 @@ export default function InstructorPage() {
     <div className="min-h-screen bg-white">
       <div className="bg-[#222222] py-16 px-8">
         <div className="max-w-5xl mx-auto">
-          <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">Instructor</p>
+          <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">Instructor</p>
           <h1 className="text-4xl font-extrabold text-white" style={{ letterSpacing: "-1px" }}>강사 대시보드</h1>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-8 py-8">
         {message && (
-          <div className="mb-4 p-3 bg-[#FFF0F3] text-[#FF385C] text-sm rounded-xl border border-[#FF385C]/20">
+          <div className="mb-4 p-3 bg-[#E9FBF2] text-[#00C471] text-sm rounded-xl border border-[#00C471]/20">
             {message}
           </div>
         )}
@@ -149,7 +149,7 @@ export default function InstructorPage() {
           <h2 className="text-2xl font-extrabold text-[#222222]">내 강의 목록</h2>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="px-5 py-2 bg-[#FF385C] text-white rounded-full text-sm font-semibold hover:bg-[#e0314f]"
+            className="px-5 py-2 bg-[#00C471] text-white rounded-full text-sm font-semibold hover:bg-[#00A65A]"
           >
             + 새 강의
           </button>
@@ -183,7 +183,7 @@ export default function InstructorPage() {
               <select value={form.level} onChange={(e)=>setForm({...form,level:e.target.value})} className="w-full px-4 py-2 border border-[#ebebeb] rounded-xl text-sm bg-white"><option>입문</option><option>초급</option><option>중급</option><option>고급</option></select>
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="px-5 py-2 bg-[#FF385C] text-white rounded-full text-sm font-semibold hover:bg-[#e0314f]">
+              <button type="submit" className="px-5 py-2 bg-[#00C471] text-white rounded-full text-sm font-semibold hover:bg-[#00A65A]">
                 생성
               </button>
               <button type="button" onClick={() => setShowForm(false)} className="px-5 py-2 bg-[#ebebeb] text-[#717171] rounded-full text-sm font-semibold">
@@ -199,7 +199,7 @@ export default function InstructorPage() {
               key={c.id}
               onClick={() => selectCourse(c)}
               className={`rounded-2xl p-6 cursor-pointer transition-all border-2 ${
-                selected?.id === c.id ? "border-[#FF385C] bg-[#FFF0F3]" : "border-transparent bg-[#F7F7F7] hover:border-[#ebebeb]"
+                selected?.id === c.id ? "border-[#00C471] bg-[#E9FBF2]" : "border-transparent bg-[#F7F7F7] hover:border-[#ebebeb]"
               }`}
             >
               <div className="flex justify-between items-start">
@@ -209,7 +209,7 @@ export default function InstructorPage() {
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); deleteCourse(c.id); }}
-                  className="text-[#FF385C] text-xs hover:underline ml-2"
+                  className="text-[#00C471] text-xs hover:underline ml-2"
                 >
                   삭제
                 </button>
@@ -230,7 +230,7 @@ export default function InstructorPage() {
               {lessons.map((l) => (
                 <div key={l.id} className="bg-[#F7F7F7] rounded-xl px-5 py-3 flex justify-between items-center">
                   <span className="text-sm font-medium text-[#222222]">{l.order}. {l.title}</span>
-                  <button onClick={() => deleteLesson(l.id)} className="text-[#FF385C] text-xs hover:underline">삭제</button>
+                  <button onClick={() => deleteLesson(l.id)} className="text-[#00C471] text-xs hover:underline">삭제</button>
                 </div>
               ))}
               {lessons.length === 0 && <p className="text-sm text-[#717171] text-center py-4">레슨 없음</p>}
@@ -266,7 +266,7 @@ export default function InstructorPage() {
                   onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
                   className="w-28 px-4 py-2 border border-[#ebebeb] rounded-xl text-sm bg-white"
                 />
-                <button type="submit" className="px-5 py-2 bg-[#FF385C] text-white rounded-full text-sm font-semibold hover:bg-[#e0314f]">
+                <button type="submit" className="px-5 py-2 bg-[#00C471] text-white rounded-full text-sm font-semibold hover:bg-[#00A65A]">
                   추가
                 </button>
               </div>

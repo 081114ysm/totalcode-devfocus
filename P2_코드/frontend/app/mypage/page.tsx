@@ -59,7 +59,7 @@ export default function MyPage() {
       {/* Header */}
       <div className="bg-[#F7F7F7] py-16 px-8">
         <div className="max-w-4xl mx-auto">
-          <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+          <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
             My Account
           </p>
           <h1
@@ -69,7 +69,7 @@ export default function MyPage() {
             마이페이지
           </h1>
           <p className="text-[#717171] mt-2">
-            <span className="font-semibold text-[#FF385C]">{user.nickname}</span>님의 학습 현황
+            <span className="font-semibold text-[#00C471]">{user.nickname}</span>님의 학습 현황
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function MyPage() {
             <p className="text-xs font-extrabold text-[#717171] uppercase tracking-widest mb-3">
               수강 강의
             </p>
-            <p className="text-4xl font-extrabold text-[#FF385C]">{enrollments.length}개</p>
+            <p className="text-4xl font-extrabold text-[#00C471]">{enrollments.length}개</p>
           </div>
           <div className="bg-[#F7F7F7] rounded-2xl p-8">
             <p className="text-xs font-extrabold text-[#717171] uppercase tracking-widest mb-3">
@@ -117,7 +117,7 @@ export default function MyPage() {
         </div>
 
         {/* Enrollments */}
-        <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+        <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
           Learning
         </p>
         <h2
@@ -131,7 +131,7 @@ export default function MyPage() {
             <p className="text-[#717171] mb-5">아직 수강 중인 강의가 없습니다</p>
             <Link
               href="/courses"
-              className="px-7 py-3 bg-[#FF385C] text-white rounded-full font-medium hover:bg-[#e0314f] transition-colors inline-block text-sm"
+              className="px-7 py-3 bg-[#00C471] text-white rounded-full font-medium hover:bg-[#00A65A] transition-colors inline-block text-sm"
             >
               강의 둘러보기
             </Link>
@@ -153,7 +153,7 @@ export default function MyPage() {
                         <p className="text-[#717171] text-sm mt-1">{course.description}</p>
                       </div>
                       {course.category && (
-                        <span className="bg-[#FFF0F3] text-[#FF385C] text-xs font-semibold px-3 py-1 rounded-full shrink-0 ml-3">
+                        <span className="bg-[#E9FBF2] text-[#00C471] text-xs font-semibold px-3 py-1 rounded-full shrink-0 ml-3">
                           {course.category}
                         </span>
                       )}
@@ -164,13 +164,13 @@ export default function MyPage() {
                         <span className="text-[#717171]">
                           {course.watched_lessons} / {course.total_lessons} 강의 완료
                         </span>
-                        <span className={`font-semibold ${progress === 100 ? "text-[#FF385C]" : "text-[#222222]"}`}>
+                        <span className={`font-semibold ${progress === 100 ? "text-[#00C471]" : "text-[#222222]"}`}>
                           {progress}%
                         </span>
                       </div>
                       <div className="w-full bg-white rounded-full h-2">
                         <div
-                          className="h-2 rounded-full bg-[#FF385C] transition-all"
+                          className="h-2 rounded-full bg-[#00C471] transition-all"
                           style={{ width: `${progress}%` }}
                         />
                       </div>

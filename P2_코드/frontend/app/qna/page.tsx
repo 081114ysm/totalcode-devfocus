@@ -86,7 +86,7 @@ export default function QnAPage() {
     <div className="min-h-screen bg-white">
       <div className="bg-[#F7F7F7] py-16 px-8">
         <div className="max-w-3xl mx-auto">
-          <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+          <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
             Community
           </p>
           <h1
@@ -102,7 +102,7 @@ export default function QnAPage() {
         <div className="bg-[#F7F7F7] rounded-2xl p-8 mb-8">
           <h2 className="font-extrabold text-[#222222] text-lg mb-5">질문 작성</h2>
           {error && (
-            <div className="mb-4 p-4 bg-[#FFF0F3] border border-[#FF385C]/20 text-[#FF385C] text-sm rounded-xl">
+            <div className="mb-4 p-4 bg-[#E9FBF2] border border-[#00C471]/20 text-[#00C471] text-sm rounded-xl">
               {error}
             </div>
           )}
@@ -111,18 +111,18 @@ export default function QnAPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목 (2자 이상)"
-            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-[#FF385C] text-sm bg-white"
+            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm bg-white"
           />
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="내용을 입력하세요"
             rows={3}
-            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF385C] resize-none text-sm bg-white"
+            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-[#00C471] resize-none text-sm bg-white"
           />
           <button
             onClick={handleSubmit}
-            className="px-7 py-2.5 bg-[#FF385C] text-white rounded-full font-medium text-sm hover:bg-[#e0314f] transition-colors"
+            className="px-7 py-2.5 bg-[#00C471] text-white rounded-full font-medium text-sm hover:bg-[#00A65A] transition-colors"
           >
             등록
           </button>
@@ -167,7 +167,7 @@ export default function QnAPage() {
                       value={answerContent}
                       onChange={(e) => setAnswerContent(e.target.value)}
                       placeholder="답변을 입력하세요"
-                      className="flex-1 px-4 py-2.5 border border-[#ebebeb] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]"
+                      className="flex-1 px-4 py-2.5 border border-[#ebebeb] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00C471]"
                     />
                     <button
                       onClick={handleAnswer}

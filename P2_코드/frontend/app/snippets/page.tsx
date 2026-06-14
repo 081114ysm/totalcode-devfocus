@@ -142,7 +142,7 @@ export default function SnippetsPage() {
       <div className="bg-[#F7F7F7] py-16 px-8">
         <div className="max-w-4xl mx-auto flex items-end justify-between">
           <div>
-            <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">Snippets</p>
+            <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">Snippets</p>
             <h1 className="text-4xl font-extrabold text-[#222222]" style={{ letterSpacing: "-1px" }}>
               코드 스니펫
             </h1>
@@ -153,7 +153,7 @@ export default function SnippetsPage() {
             className={`px-6 py-3 rounded-full font-medium text-sm transition-colors ${
               showForm
                 ? "bg-white text-[#717171] hover:bg-[#ebebeb] border border-[#ebebeb]"
-                : "bg-[#FF385C] text-white hover:bg-[#e0314f]"
+                : "bg-[#00C471] text-white hover:bg-[#00A65A]"
             }`}
           >
             {showForm ? "취소" : "+ 새 스니펫"}
@@ -222,7 +222,7 @@ export default function SnippetsPage() {
 
             <button
               type="submit"
-              className="px-6 py-2 bg-[#FF385C] text-white rounded-full font-medium text-sm hover:bg-[#e0314f] transition-colors"
+              className="px-6 py-2 bg-[#00C471] text-white rounded-full font-medium text-sm hover:bg-[#00A65A] transition-colors"
             >
               저장
             </button>

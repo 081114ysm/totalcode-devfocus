@@ -62,7 +62,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="bg-[#F7F7F7] py-16 px-8">
         <div className="max-w-4xl mx-auto">
-          <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+          <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
             Dashboard
           </p>
           <h1
@@ -73,20 +73,20 @@ export default function DashboardPage() {
           </h1>
           <p className="text-[#717171] mt-2">
             안녕하세요,{" "}
-            <span className="font-semibold text-[#FF385C]">{user.nickname}</span>님
+            <span className="font-semibold text-[#00C471]">{user.nickname}</span>님
           </p>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-8 py-12">
-        <div className="mb-12"><div className="mb-6 flex items-end justify-between"><div><p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-2">My Learning</p><h2 className="text-2xl font-extrabold">내 강의</h2></div><Link href="/courses" className="text-sm font-semibold text-[#FF385C]">강의 더 찾기</Link></div><div className="grid gap-4 md:grid-cols-2">{enrollments.map((course)=><article key={course.id} className="rounded-2xl border border-zinc-100 p-5"><div className="flex justify-between gap-3"><div><span className="text-xs font-bold text-[#FF385C]">{course.category}</span><h3 className="mt-1 font-extrabold">{course.title}</h3></div><strong className="text-lg">{course.completion_rate}%</strong></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-100"><div className="h-full bg-[#FF385C]" style={{width:`${course.completion_rate}%`}}/></div><p className="mt-2 text-xs text-zinc-500">{course.completed_lessons}/{course.total_lessons}개 완료</p><Link href={course.next_lesson_id?`/learn/${course.next_lesson_id}`:`/course/${course.id}`} className="mt-4 inline-block rounded-full bg-zinc-900 px-5 py-2 text-sm font-bold text-white">{course.completion_rate===100?"다시 보기":"이어보기"}</Link></article>)}{enrollments.length===0&&<p className="col-span-2 rounded-2xl bg-zinc-50 p-8 text-center text-sm text-zinc-500">수강 중인 강의가 없습니다.</p>}</div></div>
+        <div className="mb-12"><div className="mb-6 flex items-end justify-between"><div><p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-2">My Learning</p><h2 className="text-2xl font-extrabold">내 강의</h2></div><Link href="/courses" className="text-sm font-semibold text-[#00C471]">강의 더 찾기</Link></div><div className="grid gap-4 md:grid-cols-2">{enrollments.map((course)=><article key={course.id} className="rounded-2xl border border-zinc-100 p-5"><div className="flex justify-between gap-3"><div><span className="text-xs font-bold text-[#00C471]">{course.category}</span><h3 className="mt-1 font-extrabold">{course.title}</h3></div><strong className="text-lg">{course.completion_rate}%</strong></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-100"><div className="h-full bg-[#00C471]" style={{width:`${course.completion_rate}%`}}/></div><p className="mt-2 text-xs text-zinc-500">{course.completed_lessons}/{course.total_lessons}개 완료</p><Link href={course.next_lesson_id?`/learn/${course.next_lesson_id}`:`/course/${course.id}`} className="mt-4 inline-block rounded-full bg-zinc-900 px-5 py-2 text-sm font-bold text-white">{course.completion_rate===100?"다시 보기":"이어보기"}</Link></article>)}{enrollments.length===0&&<p className="col-span-2 rounded-2xl bg-zinc-50 p-8 text-center text-sm text-zinc-500">수강 중인 강의가 없습니다.</p>}</div></div>
         {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-[#F7F7F7] rounded-2xl p-8">
             <p className="text-xs font-extrabold text-[#717171] uppercase tracking-widest mb-3">
               총 집중 시간
             </p>
-            <p className="text-4xl font-extrabold text-[#FF385C]">
+            <p className="text-4xl font-extrabold text-[#00C471]">
               {formatTime(Math.round(totalFocus))}
             </p>
           </div>
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent sessions */}
-        <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+        <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
           History
         </p>
         <h2

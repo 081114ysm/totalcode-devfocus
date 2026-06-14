@@ -99,7 +99,7 @@ export default function CourseDetailPage() {
     <div className="min-h-screen bg-white">
       <div className="bg-[#F7F7F7] py-16 px-8">
         <div className="max-w-4xl mx-auto">
-          <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+          <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
             Course
           </p>
           <div className="flex flex-col items-start justify-between gap-5 md:flex-row">
@@ -114,7 +114,7 @@ export default function CourseDetailPage() {
                 onClick={handleLike}
                 className={`flex items-center gap-1 px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   course.liked
-                    ? "bg-[#FFF0F3] text-[#FF385C]"
+                    ? "bg-[#E9FBF2] text-[#00C471]"
                     : "bg-white text-[#717171] hover:bg-[#ebebeb]"
                 }`}
               >
@@ -123,24 +123,24 @@ export default function CourseDetailPage() {
               {!course.enrolled ? (
                 <button
                   onClick={course.price > 0 ? handlePayment : handleEnroll}
-                  className="px-5 py-2 bg-[#FF385C] text-white text-sm rounded-full hover:bg-[#e0314f] transition-colors font-medium"
+                  className="px-5 py-2 bg-[#00C471] text-white text-sm rounded-full hover:bg-[#00A65A] transition-colors font-medium"
                 >
                   {course.price > 0 ? `${course.price.toLocaleString()}원 결제` : "무료 수강 신청"}
                 </button>
               ) : (
-                <button onClick={()=>router.push(progress?.nextLessonId?`/learn/${progress.nextLessonId}`:`/learn/${course.lessons[0]?.id}`)} className="px-5 py-2 bg-[#FF385C] text-white text-sm rounded-full font-semibold">{progress?.completionRate===100?"복습하기":"이어보기"}</button>
+                <button onClick={()=>router.push(progress?.nextLessonId?`/learn/${progress.nextLessonId}`:`/learn/${course.lessons[0]?.id}`)} className="px-5 py-2 bg-[#00C471] text-white text-sm rounded-full font-semibold">{progress?.completionRate===100?"복습하기":"이어보기"}</button>
               )}
             </div>
           </div>
           <p className="text-[#717171] mt-4 text-base leading-relaxed">{course.description}</p>
           <p className="mt-3 text-sm font-semibold text-zinc-600">★ {course.ratingAverage} ({course.reviewCount}) · 난이도 {course.level} · {course.price ? `${course.price.toLocaleString()}원` : "무료"}</p>
-          {message && <p className="mt-4 rounded-xl bg-white px-4 py-3 text-sm text-[#FF385C]">{message}</p>}
+          {message && <p className="mt-4 rounded-xl bg-white px-4 py-3 text-sm text-[#00C471]">{message}</p>}
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-8 py-12">
-        {course.enrolled&&progress&&<section className="mb-10 rounded-2xl bg-zinc-950 p-6 text-white"><div className="flex items-end justify-between"><div><p className="text-xs font-bold tracking-widest text-[#FF385C]">MY PROGRESS</p><h2 className="mt-2 text-xl font-extrabold">학습 진행 상황</h2></div><strong className="text-3xl">{progress.completionRate}%</strong></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-700"><div className="h-full bg-[#FF385C]" style={{width:`${progress.completionRate}%`}}/></div><p className="mt-3 text-sm text-zinc-400">전체 {progress.totalLessons}개 중 {progress.completedLessons}개 완료</p></section>}
-        <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+        {course.enrolled&&progress&&<section className="mb-10 rounded-2xl bg-zinc-950 p-6 text-white"><div className="flex items-end justify-between"><div><p className="text-xs font-bold tracking-widest text-[#00C471]">MY PROGRESS</p><h2 className="mt-2 text-xl font-extrabold">학습 진행 상황</h2></div><strong className="text-3xl">{progress.completionRate}%</strong></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-700"><div className="h-full bg-[#00C471]" style={{width:`${progress.completionRate}%`}}/></div><p className="mt-3 text-sm text-zinc-400">전체 {progress.totalLessons}개 중 {progress.completedLessons}개 완료</p></section>}
+        <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
           Lessons
         </p>
         <h2
@@ -158,7 +158,7 @@ export default function CourseDetailPage() {
               className="bg-[#F7F7F7] rounded-xl px-5 py-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center"
             >
               <div>
-                <span className={`font-mono text-sm mr-3 ${complete?"text-green-600":"text-[#FF385C]"}`}>{complete?"✓":`${lesson.order}.`}</span>
+                <span className={`font-mono text-sm mr-3 ${complete?"text-green-600":"text-[#00C471]"}`}>{complete?"✓":`${lesson.order}.`}</span>
                 <span className="font-medium text-[#222222]">{lesson.title}</span>
               </div>
               <div className="flex items-center gap-4">
@@ -176,7 +176,7 @@ export default function CourseDetailPage() {
           )})}
         </div>
 
-        <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3">
+        <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3">
           Discussion
         </p>
         <h2
@@ -191,13 +191,13 @@ export default function CourseDetailPage() {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             placeholder={isLoggedIn ? "댓글을 입력하세요..." : "로그인 후 댓글을 작성할 수 있습니다"}
-            className="flex-1 border border-[#ebebeb] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF385C] text-sm"
+            className="flex-1 border border-[#ebebeb] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm"
             disabled={!isLoggedIn}
           />
           <button
             type="submit"
             disabled={!isLoggedIn}
-            className="px-6 py-3 bg-[#FF385C] text-white rounded-xl hover:bg-[#e0314f] transition-colors disabled:opacity-40 text-sm font-medium"
+            className="px-6 py-3 bg-[#00C471] text-white rounded-xl hover:bg-[#00A65A] transition-colors disabled:opacity-40 text-sm font-medium"
           >
             작성
           </button>

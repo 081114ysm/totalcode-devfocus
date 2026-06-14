@@ -47,7 +47,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7]">
       <div className="max-w-md w-full bg-white rounded-3xl p-10 shadow-sm">
-        <p className="text-[#FF385C] text-xs font-extrabold tracking-[3px] uppercase mb-3 text-center">
+        <p className="text-[#00C471] text-xs font-extrabold tracking-[3px] uppercase mb-3 text-center">
           DEVFOCUS
         </p>
         <h1
@@ -57,7 +57,7 @@ export default function LoginPage() {
           로그인
         </h1>
         {error && (
-          <div className="mb-5 p-4 bg-[#FFF0F3] border border-[#FF385C]/20 text-[#FF385C] text-sm rounded-xl">
+          <div className="mb-5 p-4 bg-[#E9FBF2] border border-[#00C471]/20 text-[#00C471] text-sm rounded-xl">
             {error}
           </div>
         )}
@@ -67,25 +67,25 @@ export default function LoginPage() {
             placeholder="이메일"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF385C] text-sm"
+            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm"
           />
           <input
             type="password"
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF385C] text-sm"
+            className="w-full px-4 py-3 border border-[#ebebeb] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm"
           />
           <button
             type="submit"
-            className="w-full bg-[#FF385C] text-white py-3 rounded-full font-semibold hover:bg-[#e0314f] transition-colors"
+            className="w-full bg-[#00C471] text-white py-3 rounded-full font-semibold hover:bg-[#00A65A] transition-colors"
           >
             로그인
           </button>
         </form>
         <p className="mt-6 text-sm text-center text-[#717171]">
           계정이 없나요?{" "}
-          <a href="/register" className="text-[#FF385C] font-medium">
+          <a href="/register" className="text-[#00C471] font-medium">
             회원가입
           </a>
         </p>
