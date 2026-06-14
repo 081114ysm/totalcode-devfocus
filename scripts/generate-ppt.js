@@ -59,9 +59,9 @@ s.addText("P1 · P2 · P3  |  2026.06.15", { x: 0.73, y: 6.45, w: 4, h: 0.3, fon
 // 02 Project Overview
 s = base({ number: "02" });
 title(s, "Overview", "이 프로젝트는\n무엇을 해결하나요?", "DevFocus는 학생, 강사, 관리자 모두가 같은 데이터 위에서 움직이는 개발자 학습 플랫폼입니다.", { w: 7.7, h: 1.6 });
-card(s, "학생", "강의 탐색부터 결제, 학습, 진도 저장, 수강평까지 한 번에 연결합니다.", 0.75, 3.25, 3.65, 2.35, C.coral);
-card(s, "강사", "강의와 레슨을 직접 관리하고, 수강생과 매출, 학습률을 확인합니다.", 4.82, 3.25, 3.65, 2.35, C.blue);
-card(s, "관리자", "회원, 권한, 결제, 환불, Webhook, 배치, 로그를 운영 콘솔에서 봅니다.", 8.9, 3.25, 3.65, 2.35, C.green);
+card(s, "학생", "강의 탐색, 결제, 진도 저장, 수강평을 한 흐름으로 연결합니다.", 0.75, 3.25, 3.65, 2.35, C.coral);
+card(s, "강사", "강의와 레슨을 직접 관리하고 수강생과 매출을 확인합니다.", 4.82, 3.25, 3.65, 2.35, C.blue);
+card(s, "관리자", "회원, 결제, 환불, Webhook, 배치, 로그를 운영 콘솔에서 봅니다.", 8.9, 3.25, 3.65, 2.35, C.green);
 
 // 03 Problem
 s = base({ number: "03" });
@@ -134,10 +134,10 @@ checks.forEach(([a, b], i) => { const y = 3.25 + i * 0.82; s.addText(a, { x: 0.8
 
 // 12 Deployment
 s = base({ number: "12" });
-title(s, "Deployment", "준비 완료와 배포 완료는\n같은 말이 아닙니다.", "현재 코드는 배포 가능한 상태지만 공개 URL과 운영 인프라는 아직 연결되지 않았습니다.", { w: 8.0, h: 1.55 });
-card(s, "준비됨", "Dockerfile · Compose\n환경변수 예제 · Runbook\nHealth · Metrics", 0.75, 4.15, 3.65, 2.0, C.green);
-card(s, "현재", "공개 URL 없음\n운영 DB 없음\n실결제 운영 키 미연결", 4.82, 4.15, 3.65, 2.0, C.coral);
-card(s, "배포 순서", "관리형 MySQL\nAPI · Frontend · TLS\nSecret · Toss 도메인", 8.9, 4.15, 3.65, 2.0, C.blue);
+title(s, "Deployment", "공개 배포와\n운영 전환을 완료했습니다.", "Vercel 자동 재배포와 AWS 백엔드, MySQL, 결제 연동, 모니터링 구성을 모두 연결한 상태로 발표합니다.", { w: 8.4, h: 1.55 });
+card(s, "Frontend", "Vercel Git 연동\nmain push 자동 재배포\nNext.js standalone", 0.75, 4.15, 3.65, 2.0, C.green);
+card(s, "Backend", "AWS Docker 배포\nHealth · Metrics\n로그 · Scheduler", 4.82, 4.15, 3.65, 2.0, C.coral);
+card(s, "Payments", "Toss 결제 승인·취소\nWebhook 검증\n수강 등록 자동화", 8.9, 4.15, 3.65, 2.0, C.blue);
 
 // 13 Roadmap
 s = base({ number: "13" });
