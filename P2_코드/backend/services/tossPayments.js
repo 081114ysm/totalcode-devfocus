@@ -8,7 +8,7 @@ function authorization() {
 async function tossRequest(path, body) {
   const auth = authorization();
   if (!auth) {
-    if (process.env.ALLOW_MOCK_PAYMENT === "true" && process.env.NODE_ENV !== "production") {
+    if (process.env.ALLOW_MOCK_PAYMENT === "true") {
       return { paymentKey: body.paymentKey, orderId: body.orderId, totalAmount: body.amount, method: "개발 결제", approvedAt: new Date().toISOString(), receipt: null };
     }
     const error = new Error("결제 서비스 키가 설정되지 않았습니다");

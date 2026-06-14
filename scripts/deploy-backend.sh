@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-PROJECT_DIR=${PROJECT_DIR:-/opt/devfocus}
+PROJECT_DIR=${PROJECT_DIR:-"$HOME/devfocus"}
 COMPOSE_FILE=${COMPOSE_FILE:-docker-compose.production.yml}
 
 cd "$PROJECT_DIR"
