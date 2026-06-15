@@ -129,20 +129,20 @@ CREATE TABLE IF NOT EXISTS code_snippets (
 
 -- 샘플 강의 데이터
 INSERT IGNORE INTO courses (id, title, description, thumbnail, category, price, level) VALUES
-(1, 'React 기초부터 실전까지', 'React의 기본 개념부터 프로젝트 실습까지 배워봅니다.', '/images/react.png', '프론트엔드', 49000, '초급'),
-(2, 'Node.js 백엔드 개발', 'Express를 활용한 REST API 서버 구축을 학습합니다.', '/images/node.png', '백엔드', 59000, '중급'),
-(3, 'TypeScript 완전 정복', '타입스크립트의 핵심 개념과 실무 활용법을 익힙니다.', '/images/ts.png', '프론트엔드', 39000, '초급');
+(1, 'React Basics to Production', 'Learn components, state, and routing from the ground up.', '/images/react.png', 'Frontend', 49000, '초급'),
+(2, 'Node.js and Express API Design', 'Build APIs with auth, validation, and operational patterns.', '/images/node.png', 'Backend', 59000, '중급'),
+(3, 'MySQL and Deployment Operations', 'Cover schema design, migrations, deployment, and monitoring.', '/images/ts.png', 'Database', 39000, '초급');
 
 INSERT IGNORE INTO lessons (id, course_id, title, video_url, `order`, duration) VALUES
-(1, 1, 'React란 무엇인가?', 'https://www.youtube.com/watch?v=Tn6-PIqc4UM', 1, 600),
-(2, 1, 'JSX 문법 이해하기', 'https://www.youtube.com/watch?v=7fPXI_MnBOY', 2, 720),
-(3, 1, 'useState와 useEffect', 'https://www.youtube.com/watch?v=0ZJgIjIuY7U', 3, 900),
-(4, 2, 'Node.js 소개', 'https://www.youtube.com/watch?v=TlB_eWDSMt4', 1, 480),
-(5, 2, 'Express 시작하기', 'https://www.youtube.com/watch?v=L72fhGm1tfE', 2, 660),
-(6, 2, 'REST API 설계', 'https://www.youtube.com/watch?v=lsMQRaeKNDk', 3, 840),
-(7, 3, 'TypeScript 기본 타입', 'https://www.youtube.com/watch?v=BwuLxPH8IDs', 1, 540),
-(8, 3, '인터페이스와 타입', 'https://www.youtube.com/watch?v=d56mG7DezGs', 2, 720),
-(9, 3, '제네릭 활용', 'https://www.youtube.com/watch?v=nViEqpgwxHE', 3, 780);
+(1, 1, 'Set up a React project', 'https://www.youtube.com/watch?v=Tn6-PIqc4UM', 1, 600),
+(2, 1, 'Components and props', 'https://www.youtube.com/watch?v=7fPXI_MnBOY', 2, 720),
+(3, 1, 'State and effects', 'https://www.youtube.com/watch?v=0ZJgIjIuY7U', 3, 900),
+(4, 2, 'Express project structure', 'https://www.youtube.com/watch?v=TlB_eWDSMt4', 1, 480),
+(5, 2, 'Express setup and routing', 'https://www.youtube.com/watch?v=L72fhGm1tfE', 2, 660),
+(6, 2, 'REST API design', 'https://www.youtube.com/watch?v=lsMQRaeKNDk', 3, 840),
+(7, 3, 'TypeScript basic types', 'https://www.youtube.com/watch?v=BwuLxPH8IDs', 1, 540),
+(8, 3, 'Interfaces and type aliases', 'https://www.youtube.com/watch?v=d56mG7DezGs', 2, 720),
+(9, 3, 'Using generics', 'https://www.youtube.com/watch?v=nViEqpgwxHE', 3, 780);
 
 -- 기존 더미 URL을 실제 영상으로 덮어쓰기 (재실행 안전)
 UPDATE lessons SET video_url = 'https://www.youtube.com/watch?v=Tn6-PIqc4UM' WHERE id = 1;

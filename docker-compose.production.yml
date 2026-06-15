@@ -11,6 +11,7 @@ services:
       - mysql-data:/var/lib/mysql
       - ./전체코드/backend/config/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./전체코드/backend/config/schema_p2_p3.sql:/docker-entrypoint-initdb.d/02-p2-p3.sql:ro
+      - ./전체코드/backend/config/seed.sql:/docker-entrypoint-initdb.d/03-seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
       interval: 10s

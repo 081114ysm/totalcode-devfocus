@@ -66,7 +66,10 @@ app.use("/api", apiLimiter);
 // Health Check
 app.get("/health", async (req, res) => {
   try { await db.query("SELECT 1"); res.json({ status: "ok", database: "up", uptime: process.uptime(), timestamp: new Date().toISOString() }); }
-  catch { res.status(503).json({ status: "degraded", database: "down", timestamp: new Date().toISOString() }); }
+  catch (error) {
+    logger.error("health check failed", { message: error.message, code: error.code });
+    res.status(503).json({ status: "degraded", database: "down", timestamp: new Date().toISOString() });
+  }
 });
 app.get("/metrics", authMiddleware, requireRole("admin"), (req,res)=>res.json(getMetrics()));
 
