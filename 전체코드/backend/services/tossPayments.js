@@ -7,7 +7,8 @@ function authorization() {
 
 async function tossRequest(path, body) {
   const auth = authorization();
-  if (process.env.ALLOW_MOCK_PAYMENT === "true") {
+  const isDemoPayment = String(body?.paymentKey || "").startsWith("demo_");
+  if (process.env.ALLOW_MOCK_PAYMENT === "true" || isDemoPayment) {
     return {
       paymentKey: body.paymentKey,
       orderId: body.orderId,
@@ -42,6 +43,6 @@ export const confirmTossPayment = ({ paymentKey, orderId, amount }) =>
   tossRequest("/confirm", { paymentKey, orderId, amount });
 
 export const cancelTossPayment = (paymentKey, cancelReason) =>
-  (process.env.ALLOW_MOCK_PAYMENT === "true"
+  (process.env.ALLOW_MOCK_PAYMENT === "true" || String(paymentKey).startsWith("demo_")
     ? Promise.resolve({ paymentKey, cancelReason, skipped: true })
     : tossRequest(`/${encodeURIComponent(paymentKey)}/cancel`, { cancelReason }));
