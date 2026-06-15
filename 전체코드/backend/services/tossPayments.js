@@ -7,10 +7,17 @@ function authorization() {
 
 async function tossRequest(path, body) {
   const auth = authorization();
+  if (process.env.ALLOW_MOCK_PAYMENT === "true") {
+    return {
+      paymentKey: body.paymentKey,
+      orderId: body.orderId,
+      totalAmount: body.amount,
+      method: "데모 결제",
+      approvedAt: new Date().toISOString(),
+      receipt: null,
+    };
+  }
   if (!auth) {
-    if (process.env.ALLOW_MOCK_PAYMENT === "true") {
-      return { paymentKey: body.paymentKey, orderId: body.orderId, totalAmount: body.amount, method: "개발 결제", approvedAt: new Date().toISOString(), receipt: null };
-    }
     const error = new Error("결제 서비스 키가 설정되지 않았습니다");
     error.status = 503;
     throw error;
@@ -35,4 +42,6 @@ export const confirmTossPayment = ({ paymentKey, orderId, amount }) =>
   tossRequest("/confirm", { paymentKey, orderId, amount });
 
 export const cancelTossPayment = (paymentKey, cancelReason) =>
-  tossRequest(`/${encodeURIComponent(paymentKey)}/cancel`, { cancelReason });
+  (process.env.ALLOW_MOCK_PAYMENT === "true"
+    ? Promise.resolve({ paymentKey, cancelReason, skipped: true })
+    : tossRequest(`/${encodeURIComponent(paymentKey)}/cancel`, { cancelReason }));

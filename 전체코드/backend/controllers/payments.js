@@ -15,7 +15,7 @@ export async function initiatePayment(req, res) {
   const pendingKey = `pending_${crypto.randomUUID()}`;
   const [result] = await db.query("INSERT INTO payments (user_id,course_id,amount,payment_key,order_id,provider) VALUES (?,?,?,?,?,'toss')", [req.user.id,courses[0].id,courses[0].price,pendingKey,orderId]);
   const customerKey = crypto.createHash("sha256").update(`${process.env.JWT_SECRET}:${req.user.id}`).digest("hex").slice(0, 32);
-  res.status(201).json({ paymentId: result.insertId, orderId, amount: courses[0].price, orderName: courses[0].title, customerKey });
+  res.status(201).json({ paymentId: result.insertId, orderId, amount: courses[0].price, orderName: courses[0].title, customerKey, demoMode: process.env.ALLOW_MOCK_PAYMENT === "true" });
 }
 
 export async function confirmPayment(req, res) {
