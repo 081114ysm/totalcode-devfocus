@@ -8,15 +8,15 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root-local}
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./P2_코드/backend/config/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./P2_코드/backend/config/schema_p2_p3.sql:/docker-entrypoint-initdb.d/02-p2-p3.sql:ro
+      - ./전체코드/backend/config/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./전체코드/backend/config/schema_p2_p3.sql:/docker-entrypoint-initdb.d/02-p2-p3.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 3s
       retries: 20
   backend:
-    build: ./P2_코드/backend
+    build: ./전체코드/backend
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -35,7 +35,7 @@ services:
     ports: ["3001:3001"]
   frontend:
     build:
-      context: ./P2_코드/frontend
+      context: ./전체코드/frontend
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3001/api
         NEXT_PUBLIC_TOSS_CLIENT_KEY: ${NEXT_PUBLIC_TOSS_CLIENT_KEY:-}

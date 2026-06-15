@@ -5,9 +5,9 @@
 DevFocus is a developer learning platform. This repository contains project
 documentation and two separate npm applications rather than a root workspace.
 
-- Product documentation: `P2_문서/`
-- Frontend: `P2_코드/frontend/` (Next.js 16, React 19, TypeScript)
-- Backend: `P2_코드/backend/` (Express 5, JavaScript ESM, MySQL 8)
+- Product documentation: `전체문서/`
+- Frontend: `전체코드/frontend/` (Next.js 16, React 19, TypeScript)
+- Backend: `전체코드/backend/` (Express 5, JavaScript ESM, MySQL 8)
 - Package manager: npm, independently in each application
 - Runtime: Node.js 20 or newer
 
@@ -17,7 +17,7 @@ or package scripts exists.
 
 ## Source Of Truth
 
-1. Use `P2_문서/` for product, API, authorization, and database requirements.
+1. Use `전체문서/` for product, API, authorization, and database requirements.
 2. Use nearby implementation for existing code conventions.
 3. When documentation and implementation disagree, identify the mismatch before
    changing public behavior or database contracts.
@@ -29,7 +29,7 @@ or package scripts exists.
 Install and verify each application from its own directory.
 
 ```bash
-cd P2_코드/frontend
+cd 전체코드/frontend
 npm ci
 npm run lint
 npm run build
@@ -48,15 +48,15 @@ Run all currently available checks from the repository root with:
 Development servers:
 
 ```bash
-cd P2_코드/frontend && npm run dev
-cd P2_코드/backend && npm run dev
+cd 전체코드/frontend && npm run dev
+cd 전체코드/backend && npm run dev
 ```
 
 ## Working Rules
 
 1. Read `AGENTS.md` and the relevant `.codex/rules/*.md` before editing.
-2. Read relevant files under `P2_문서/` for feature and API work.
-3. Keep frontend API usage aligned with `P2_코드/frontend/lib/api.ts` and the
+2. Read relevant files under `전체문서/` for feature and API work.
+3. Keep frontend API usage aligned with `전체코드/frontend/lib/api.ts` and the
    documented `/api` contracts.
 4. Keep authentication, authorization, validation, and ownership checks on the
    backend even when the frontend also checks them.

@@ -2,7 +2,7 @@
 
 ## Shared Contract
 
-- Start with `CODEX.md`, relevant files under `P2_문서/`, package scripts, and
+- Start with `CODEX.md`, relevant files under `전체문서/`, package scripts, and
   nearby implementation.
 - Treat this repository as two independent npm applications; there is no root
   package workspace.
@@ -16,8 +16,8 @@
 ## Developer Agent
 
 - Translate documented requirements into frontend, API, and database changes.
-- Build accessible, typed React UI under `P2_코드/frontend/`.
-- Keep backend modules under `P2_코드/backend/` consistent with the current
+- Build accessible, typed React UI under `전체코드/frontend/`.
+- Keep backend modules under `전체코드/backend/` consistent with the current
   routes/controllers/config layout.
 - Add focused tests where the repository has a usable test structure.
 - Run `.codex/hooks/verify.sh` before completion.
@@ -35,7 +35,7 @@
 - Lead with correctness, regressions, authorization, input validation,
   accessibility, schema compatibility, and missing tests.
 - Cite file and line references and describe concrete failure scenarios.
-- Compare implementation changes with `P2_문서/`, not only nearby code.
+- Compare implementation changes with `전체문서/`, not only nearby code.
 - Do not edit files unless explicitly asked to fix findings.
 
 ## Rule Selection
