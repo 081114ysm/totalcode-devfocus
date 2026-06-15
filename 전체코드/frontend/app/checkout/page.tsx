@@ -9,6 +9,16 @@ interface Order { orderId:string; amount:number; orderName:string; customerKey:s
 
 const FALLBACK_CLIENT_KEY = "test_ck_Z61JOxRQVE10leWR7PLwVW0X9bAq";
 
+function resolveClientKey() {
+  const envKey =
+    process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY ||
+    process.env.NEXT_PUBLIC_TOSS_WIDGET_CLIENT_KEY ||
+    "";
+
+  if (/^(test|live)_ck_[A-Za-z0-9]+$/.test(envKey)) return envKey;
+  return FALLBACK_CLIENT_KEY;
+}
+
 export default function CheckoutPage(){
   const router=useRouter(); const [courseId,setCourseId]=useState(0);
   const [order,setOrder]=useState<Order|null>(null); const [message,setMessage]=useState("결제 정보를 준비하고 있습니다."); const widget=useRef<TossPaymentsWidgets|null>(null);
@@ -16,8 +26,7 @@ export default function CheckoutPage(){
   useEffect(()=>{ if(!localStorage.getItem("token")){router.push("/login");return;} if(!courseId)return; api<Order>("/payments/initiate",{method:"POST",body:JSON.stringify({courseId})}).then(setOrder).catch((error)=>setMessage(error instanceof Error?error.message:"주문 생성 실패")); },[courseId,router]);
   useEffect(()=>{
     if(!order)return;
-    const clientKey=process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY||FALLBACK_CLIENT_KEY;
-    if(!clientKey){setMessage("결제 키가 설정되지 않았습니다.");return;}
+    const clientKey=resolveClientKey();
     loadTossPayments(clientKey)
       .then(async(toss)=>{
         const paymentWidget=toss.widgets({customerKey:order.customerKey});
