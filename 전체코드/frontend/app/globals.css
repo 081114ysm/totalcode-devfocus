@@ -14,7 +14,7 @@ html { scroll-behavior: smooth; }
 body {
   background-color: var(--bg);
   color: var(--dark);
-  font-family: Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Malgun Gothic", sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif;
   letter-spacing: -0.015em;
 }
 
