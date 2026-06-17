@@ -22,6 +22,40 @@ const accounts = [
   }
 ];
 
+await db.query(`CREATE TABLE IF NOT EXISTS job_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  job_name VARCHAR(100) NOT NULL,
+  status ENUM('success','failed') NOT NULL,
+  message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`);
+
+await db.query(`CREATE TABLE IF NOT EXISTS settlements (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  instructor_id INT NOT NULL,
+  period VARCHAR(7) NOT NULL,
+  total_amount INT NOT NULL DEFAULT 0,
+  platform_fee INT NOT NULL DEFAULT 0,
+  net_amount INT NOT NULL DEFAULT 0,
+  status ENUM('pending','paid') NOT NULL DEFAULT 'pending',
+  paid_at TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_settlement (instructor_id, period)
+)`);
+
+await db.query(`CREATE TABLE IF NOT EXISTS webhook_events (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  provider VARCHAR(50) NOT NULL,
+  event_id VARCHAR(100) NOT NULL,
+  event_type VARCHAR(100) NOT NULL,
+  status ENUM('received','processed','failed') NOT NULL DEFAULT 'received',
+  payload JSON NOT NULL,
+  error_message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  processed_at TIMESTAMP NULL,
+  UNIQUE KEY unique_provider_event (provider, event_id)
+)`);
+
 for (const account of accounts) {
   if (!account.email || !account.password || account.password.length < 8) {
     throw new Error(`Invalid credentials for ${account.role}`);
