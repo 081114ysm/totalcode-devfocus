@@ -21,6 +21,14 @@ interface Lesson {
   duration: number;
 }
 
+interface CourseComment {
+  id: number;
+  content: string;
+  created_at: string;
+  course: { id: number; title: string };
+  user: { id: number; nickname: string };
+}
+
 interface Analytics {
   summary: { courseCount:number; enrollmentCount:number; grossRevenue:number; activeLearners:number };
   courses: Array<{ id:number; title:string; enrollments:number; revenue:number; averageProgress:number|null }>;
@@ -38,6 +46,7 @@ export default function InstructorPage() {
   const [lessonForm, setLessonForm] = useState({ title: "", video_url: "", order: "1", duration: "600" });
   const [message, setMessage] = useState("");
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [comments, setComments] = useState<CourseComment[]>([]);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -47,10 +56,13 @@ export default function InstructorPage() {
     }
     loadCourses();
     api<Analytics>("/instructor/analytics").then(setAnalytics).catch(() => {});
+    api<{ comments: CourseComment[] }>("/instructor/comments").then((d) => setComments(d.comments ?? [])).catch(() => {});
   }, [router]);
 
   const loadCourses = () =>
-    api("/instructor/courses").then((d) => setCourses(d.courses ?? [])).catch(() => {});
+    api("/instructor/courses").then((d) => setCourses(d.courses ?? [])).catch((err: unknown) => {
+      setMessage(err instanceof Error ? err.message : "강의 목록을 불러오지 못했습니다");
+    });
 
   const loadLessons = (courseId: number) =>
     api(`/courses/${courseId}`).then((d) => setLessons(d.lessons || [])).catch(() => {});
@@ -83,6 +95,7 @@ export default function InstructorPage() {
       setMessage("강의 삭제 완료");
       setSelected(null);
       loadCourses();
+      api<{ comments: CourseComment[] }>("/instructor/comments").then((d) => setComments(d.comments ?? [])).catch(() => {});
     } catch {
       setMessage("삭제 실패");
     }
@@ -103,6 +116,7 @@ export default function InstructorPage() {
       setMessage("레슨 추가 완료");
       setLessonForm({ title: "", video_url: "", order: "1", duration: "600" });
       loadLessons(selected.id);
+      api<{ comments: CourseComment[] }>("/instructor/comments").then((d) => setComments(d.comments ?? [])).catch(() => {});
     } catch (err: unknown) {
       setMessage(err instanceof Error ? err.message : "추가 실패");
     }
@@ -271,6 +285,28 @@ export default function InstructorPage() {
                 </button>
               </div>
             </form>
+
+            <div className="mt-6 bg-[#F7F7F7] rounded-2xl p-6">
+              <h4 className="font-bold text-[#222222] mb-4">최근 댓글</h4>
+              <div className="space-y-3">
+                {comments
+                  .filter((comment) => comment.course.id === selected.id)
+                  .slice(0, 5)
+                  .map((comment) => (
+                    <article key={comment.id} className="rounded-xl bg-white p-4 border border-[#ebebeb]">
+                      <div className="flex items-center justify-between gap-3 text-xs text-[#717171]">
+                        <span className="font-semibold text-[#222222]">{comment.user.nickname}</span>
+                        <span>{new Date(comment.created_at).toLocaleString("ko-KR")}</span>
+                      </div>
+                      <p className="mt-2 text-sm font-medium text-[#00C471]">{comment.course.title}</p>
+                      <p className="mt-1 text-sm text-[#222222]">{comment.content}</p>
+                    </article>
+                  ))}
+                {comments.filter((comment) => comment.course.id === selected.id).length === 0 && (
+                  <p className="text-sm text-[#717171]">이 강의에는 아직 댓글이 없습니다</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

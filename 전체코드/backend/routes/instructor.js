@@ -9,6 +9,7 @@ import {
   updateLesson,
   deleteLesson,
   getInstructorAnalytics,
+  getMyComments,
 } from "../controllers/instructor.js";
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.use(authMiddleware, requireRole("instructor", "admin"));
 
 router.get("/courses", getMyCourses);
 router.get("/analytics", getInstructorAnalytics);
+router.get("/comments", getMyComments);
 router.post("/courses", createCourse);
 router.patch("/courses/:courseId", updateMyCourse);
 router.delete("/courses/:courseId", deleteMyCourse);

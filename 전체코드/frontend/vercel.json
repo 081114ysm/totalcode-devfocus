@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "env": {
-    "NEXT_PUBLIC_API_URL": "/backend-api",
+    "NEXT_PUBLIC_API_URL": "http://13.125.181.228:3001/api",
     "BACKEND_ORIGIN": "http://13.125.181.228:3001",
     "NEXT_PUBLIC_TOSS_CLIENT_KEY": "test_ck_Z61JOxRQVE10leWR7PLwVW0X9bAq"
   }

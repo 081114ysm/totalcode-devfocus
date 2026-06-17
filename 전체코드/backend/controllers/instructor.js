@@ -35,6 +35,35 @@ export const getInstructorAnalytics = async (req, res) => {
   } catch (err) { logger.error("instructor analytics error", { error: err.message }); res.status(500).json({ error: "서버 에러" }); }
 };
 
+export const getMyComments = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT cm.id, cm.content, cm.created_at,
+              c.id AS course_id, c.title AS course_title,
+              u.id AS user_id, u.nickname AS user_nickname
+         FROM course_comments cm
+         JOIN courses c ON c.id = cm.course_id
+         JOIN users u ON u.id = cm.user_id
+        WHERE c.instructor_id = ?
+        ORDER BY cm.created_at DESC
+        LIMIT 50`,
+      [req.user.id]
+    );
+    res.json({
+      comments: rows.map((row) => ({
+        id: row.id,
+        content: row.content,
+        created_at: row.created_at,
+        course: { id: row.course_id, title: row.course_title },
+        user: { id: row.user_id, nickname: row.user_nickname },
+      })),
+    });
+  } catch (err) {
+    logger.error("getMyComments error", { error: err.message });
+    res.status(500).json({ error: "서버 에러" });
+  }
+};
+
 export const createCourse = async (req, res) => {
   const { title, description, thumbnail, category, price = 0, level = "입문" } = req.body;
   if (!title) return res.status(400).json({ error: "제목을 입력하세요" });
