@@ -86,10 +86,16 @@ CREATE TABLE IF NOT EXISTS course_comments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   course_id INT NOT NULL,
+  lesson_id INT DEFAULT NULL,
   content TEXT NOT NULL,
+  reply_content TEXT DEFAULT NULL,
+  reply_user_id INT DEFAULT NULL,
+  reply_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+  FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+  FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL,
+  FOREIGN KEY (reply_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS course_reviews (

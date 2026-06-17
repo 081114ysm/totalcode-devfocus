@@ -81,6 +81,45 @@ CREATE INDEX IF NOT EXISTS idx_snippets_user ON code_snippets(user_id);
 CREATE INDEX IF NOT EXISTS idx_payments_user ON payments(user_id);
 CREATE INDEX IF NOT EXISTS idx_courses_instructor ON courses(instructor_id);
 
+SET @s = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='devfocus' AND TABLE_NAME='course_comments' AND COLUMN_NAME='lesson_id') > 0,
+  'SELECT 1',
+  'ALTER TABLE course_comments ADD COLUMN lesson_id INT DEFAULT NULL AFTER course_id'
+));
+PREPARE st FROM @s; EXECUTE st; DEALLOCATE PREPARE st;
+SET @s = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='devfocus' AND TABLE_NAME='course_comments' AND COLUMN_NAME='reply_content') > 0,
+  'SELECT 1',
+  'ALTER TABLE course_comments ADD COLUMN reply_content TEXT DEFAULT NULL AFTER content'
+));
+PREPARE st FROM @s; EXECUTE st; DEALLOCATE PREPARE st;
+SET @s = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='devfocus' AND TABLE_NAME='course_comments' AND COLUMN_NAME='reply_user_id') > 0,
+  'SELECT 1',
+  'ALTER TABLE course_comments ADD COLUMN reply_user_id INT DEFAULT NULL AFTER reply_content'
+));
+PREPARE st FROM @s; EXECUTE st; DEALLOCATE PREPARE st;
+SET @s = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='devfocus' AND TABLE_NAME='course_comments' AND COLUMN_NAME='reply_at') > 0,
+  'SELECT 1',
+  'ALTER TABLE course_comments ADD COLUMN reply_at TIMESTAMP NULL DEFAULT NULL AFTER reply_user_id'
+));
+PREPARE st FROM @s; EXECUTE st; DEALLOCATE PREPARE st;
+SET @s = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA='devfocus' AND TABLE_NAME='course_comments' AND CONSTRAINT_NAME='fk_course_comments_lesson') > 0,
+  'SELECT 1',
+  'ALTER TABLE course_comments ADD CONSTRAINT fk_course_comments_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL'
+));
+PREPARE st FROM @s; EXECUTE st; DEALLOCATE PREPARE st;
+SET @s = (SELECT IF(
+  (SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA='devfocus' AND TABLE_NAME='course_comments' AND CONSTRAINT_NAME='fk_course_comments_reply_user') > 0,
+  'SELECT 1',
+  'ALTER TABLE course_comments ADD CONSTRAINT fk_course_comments_reply_user FOREIGN KEY (reply_user_id) REFERENCES users(id) ON DELETE SET NULL'
+));
+PREPARE st FROM @s; EXECUTE st; DEALLOCATE PREPARE st;
+CREATE INDEX IF NOT EXISTS idx_course_comments_course ON course_comments(course_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_course_comments_lesson ON course_comments(lesson_id, created_at);
+
 -- 7. settlements 테이블 (강사 정산)
 CREATE TABLE IF NOT EXISTS settlements (
   id INT AUTO_INCREMENT PRIMARY KEY,

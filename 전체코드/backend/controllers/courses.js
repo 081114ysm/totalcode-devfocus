@@ -103,9 +103,12 @@ export const getCourseDetail = async (req, res) => {
     }
 
     const [commentRows] = await db.query(
-      `SELECT cm.id, cm.content, cm.created_at, u.id as user_id, u.nickname
+      `SELECT cm.id, cm.content, cm.created_at, cm.lesson_id, cm.reply_content, cm.reply_at,
+              u.id as user_id, u.nickname,
+              l.id as lesson_ref_id, l.title as lesson_title, l.\`order\` as lesson_order
        FROM course_comments cm
        JOIN users u ON cm.user_id = u.id
+       LEFT JOIN lessons l ON l.id = cm.lesson_id
        WHERE cm.course_id = ? ORDER BY cm.created_at DESC`,
       [courseId]
     );
@@ -130,6 +133,8 @@ export const getCourseDetail = async (req, res) => {
         id: cm.id,
         content: cm.content,
         user: { id: cm.user_id, nickname: cm.nickname },
+        lesson: cm.lesson_ref_id ? { id: cm.lesson_ref_id, title: cm.lesson_title, order: cm.lesson_order } : null,
+        reply: cm.reply_content ? { content: cm.reply_content, reply_at: cm.reply_at } : null,
         created_at: cm.created_at,
       })),
       reviews: reviewRows.map((review) => ({ id:review.id,rating:review.rating,content:review.content,created_at:review.created_at,user:{id:review.user_id,nickname:review.nickname} })),
@@ -183,21 +188,36 @@ export const toggleLike = async (req, res) => {
 export const addComment = async (req, res) => {
   const userId = req.user.id;
   const { courseId } = req.params;
-  const { content } = req.body;
+  const { content, lessonId } = req.body;
 
   if (!content || content.trim().length < 1) {
     return res.status(400).json({ error: "댓글 내용을 입력하세요" });
   }
 
   try {
+    let resolvedLessonId = null;
+    if (lessonId !== undefined && lessonId !== null && lessonId !== "") {
+      const [lessonRows] = await db.query(
+        "SELECT id FROM lessons WHERE id = ? AND course_id = ?",
+        [lessonId, courseId]
+      );
+      if (!lessonRows[0]) {
+        return res.status(404).json({ error: "레슨을 찾을 수 없습니다" });
+      }
+      resolvedLessonId = lessonRows[0].id;
+    }
+
     const [result] = await db.query(
-      "INSERT INTO course_comments (user_id, course_id, content) VALUES (?, ?, ?)",
-      [userId, courseId, content.trim()]
+      "INSERT INTO course_comments (user_id, course_id, lesson_id, content) VALUES (?, ?, ?, ?)",
+      [userId, courseId, resolvedLessonId, content.trim()]
     );
 
     const [rows] = await db.query(
-      `SELECT cm.id, cm.content, cm.created_at, u.id as user_id, u.nickname
+      `SELECT cm.id, cm.content, cm.created_at, cm.lesson_id, cm.reply_content, cm.reply_at,
+              u.id as user_id, u.nickname,
+              l.id as lesson_ref_id, l.title as lesson_title, l.\`order\` as lesson_order
        FROM course_comments cm JOIN users u ON cm.user_id = u.id
+       LEFT JOIN lessons l ON l.id = cm.lesson_id
        WHERE cm.id = ?`,
       [result.insertId]
     );
@@ -208,11 +228,43 @@ export const addComment = async (req, res) => {
         id: cm.id,
         content: cm.content,
         user: { id: cm.user_id, nickname: cm.nickname },
+        lesson: cm.lesson_ref_id ? { id: cm.lesson_ref_id, title: cm.lesson_title, order: cm.lesson_order } : null,
+        reply: cm.reply_content ? { content: cm.reply_content, reply_at: cm.reply_at } : null,
         created_at: cm.created_at,
       },
     });
   } catch (err) {
     logger.error("addComment error", { error: err.message });
+    res.status(500).json({ error: "서버 에러" });
+  }
+};
+
+export const replyToComment = async (req, res) => {
+  const { commentId } = req.params;
+  const content = String(req.body.content || "").trim();
+  if (!content) return res.status(400).json({ error: "답변 내용을 입력하세요" });
+
+  try {
+    const [rows] = await db.query(
+      `SELECT cm.id, c.instructor_id
+         FROM course_comments cm
+         JOIN courses c ON c.id = cm.course_id
+        WHERE cm.id = ?`,
+      [commentId]
+    );
+    if (!rows[0]) return res.status(404).json({ error: "댓글을 찾을 수 없습니다" });
+    if (req.user.role !== "admin" && rows[0].instructor_id !== req.user.id) {
+      return res.status(403).json({ error: "권한 없음" });
+    }
+
+    await db.query(
+      "UPDATE course_comments SET reply_content = ?, reply_user_id = ?, reply_at = NOW() WHERE id = ?",
+      [content, req.user.id, commentId]
+    );
+
+    res.json({ message: "댓글 답변이 저장되었습니다" });
+  } catch (err) {
+    logger.error("replyToComment error", { error: err.message });
     res.status(500).json({ error: "서버 에러" });
   }
 };
