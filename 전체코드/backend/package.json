@@ -8,7 +8,8 @@
     "dev": "node --watch app.js",
     "test": "node --test",
     "check": "node --check app.js",
-    "create-admin": "node scripts/createAdmin.js"
+    "create-admin": "node scripts/createAdmin.js",
+    "create-demo-accounts": "node scripts/createDemoAccounts.js"
   },
   "keywords": [],
   "author": "",
