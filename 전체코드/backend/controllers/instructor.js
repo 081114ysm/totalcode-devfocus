@@ -38,12 +38,14 @@ export const getInstructorAnalytics = async (req, res) => {
 export const getMyComments = async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT cm.id, cm.content, cm.created_at,
+      `SELECT cm.id, cm.content, cm.created_at, cm.lesson_id, cm.reply_content, cm.reply_at,
               c.id AS course_id, c.title AS course_title,
-              u.id AS user_id, u.nickname AS user_nickname
+              u.id AS user_id, u.nickname AS user_nickname,
+              l.id AS lesson_ref_id, l.title AS lesson_title, l.\`order\` AS lesson_order
          FROM course_comments cm
          JOIN courses c ON c.id = cm.course_id
          JOIN users u ON u.id = cm.user_id
+         LEFT JOIN lessons l ON l.id = cm.lesson_id
         WHERE c.instructor_id = ?
         ORDER BY cm.created_at DESC
         LIMIT 50`,
@@ -54,6 +56,12 @@ export const getMyComments = async (req, res) => {
         id: row.id,
         content: row.content,
         created_at: row.created_at,
+        lesson: row.lesson_ref_id
+          ? { id: row.lesson_ref_id, title: row.lesson_title, order: row.lesson_order }
+          : null,
+        reply: row.reply_content
+          ? { content: row.reply_content, reply_at: row.reply_at }
+          : null,
         course: { id: row.course_id, title: row.course_title },
         user: { id: row.user_id, nickname: row.user_nickname },
       })),

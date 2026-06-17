@@ -115,28 +115,28 @@ card(s, "P3 · 운영", "알림 · Scheduler · Webhook\n로그 · Health · Met
 // 09 Architecture
 s = base({ number: "09", dark: true });
 title(s, "Technology", "빠르게 만들고,\n명확하게 운영합니다.", "단순한 3계층 구조 위에 결제와 알림, 관측성을 연결했습니다.", { dark: true, w: 6.8, h: 1.5 });
-const tech = [["Next.js 16", "반응형 UI"], ["Express 5", "REST API"], ["MySQL 8", "영구 데이터"], ["Toss", "결제 승인"], ["Docker", "실행 환경"]];
+const tech = [["Next.js 16", "반응형 UI + webpack build"], ["Express 5", "REST API"], ["MySQL 8", "인덱스·영속 저장"], ["Toss", "결제 승인"], ["Docker", "실행 환경"]];
 tech.forEach(([a, b], i) => { const x = 0.75 + i * 2.46; s.addText(a, { x, y: 4.5, w: 2.05, h: 0.4, fontSize: 16, bold: true, color: i === 3 ? C.coral : C.paper, align: "center", margin: 0 }); s.addText(b, { x, y: 5.05, w: 2.05, h: 0.3, fontSize: 10, color: "AFAFAF", align: "center", margin: 0 }); if (i < 4) s.addText("→", { x: x + 2.05, y: 4.55, w: 0.4, h: 0.3, fontSize: 15, color: "666666", align: "center", margin: 0 }); });
 
 // 10 Operations
 s = base({ number: "10" });
-title(s, "Operations", "문제가 생긴 뒤가 아니라\n생기는 순간을 봅니다.", "운영자는 요청, 배치, Webhook, DB 상태를 한 흐름에서 추적할 수 있습니다.", { w: 7.7, h: 1.55 });
+title(s, "Operations", "문제가 생긴 뒤가 아니라\n응답 속도와 상태를 먼저 봅니다.", "운영자는 요청, 배치, Webhook, DB 상태와 함께 응답 시간과 실패 지점을 한 흐름에서 추적할 수 있습니다.", { w: 8.1, h: 1.55 });
 metric(s, "JSON", "구조화 요청 로그", 0.75, 4.25);
-metric(s, "/health", "API와 DB 상태 확인", 4.0, 4.25, C.green);
-metric(s, "/metrics", "운영 지표와 실패 이력", 7.25, 4.25, C.blue);
+metric(s, "p95", "응답 시간 추적", 4.0, 4.25, C.green);
+metric(s, "/health", "API와 DB 상태 확인", 7.25, 4.25, C.blue);
 metric(s, "HMAC", "Webhook 무결성 검증", 10.1, 4.25, C.ink);
 
 // 11 Validation
 s = base({ number: "11" });
-title(s, "Validation", "기능은 만들었고,\n자동 검증으로 확인했습니다.", null, { w: 7.0, h: 1.5 });
-const checks = [["Frontend build", "PASS"], ["Backend tests", "3 PASS"], ["Dependency audit", "0 issues"], ["PPT / Git bundle", "VERIFIED"]];
+title(s, "Validation", "기능은 만들었고,\n성능 개선도 수치로 확인했습니다.", "프론트 번들 빌드와 백엔드 API, 그리고 응답 지연 구간을 함께 점검했습니다.", { w: 7.6, h: 1.5 });
+const checks = [["Frontend build", "PASS"], ["Backend tests", "3 PASS"], ["API latency", "LOWER"], ["PPT / Git bundle", "VERIFIED"]];
 checks.forEach(([a, b], i) => { const y = 3.25 + i * 0.82; s.addText(a, { x: 0.8, y, w: 4.6, h: 0.38, fontSize: 15, color: C.gray, margin: 0 }); s.addShape(pptx.ShapeType.line, { x: 4.8, y: y + 0.18, w: 4.5, h: 0, line: { color: C.line, width: 1 } }); s.addText(b, { x: 9.75, y, w: 2.3, h: 0.38, fontSize: 15, bold: true, color: C.green, align: "right", margin: 0 }); });
 
 // 12 Deployment
 s = base({ number: "12" });
-title(s, "Deployment", "공개 배포와\n운영 전환을 완료했습니다.", "Vercel 자동 재배포와 AWS 백엔드, MySQL, 결제 연동, 모니터링 구성을 모두 연결한 상태로 발표합니다.", { w: 8.4, h: 1.55 });
-card(s, "Frontend", "Vercel Git 연동\nmain push 자동 재배포\nNext.js standalone", 0.75, 4.15, 3.65, 2.0, C.green);
-card(s, "Backend", "AWS Docker 배포\nHealth · Metrics\n로그 · Scheduler", 4.82, 4.15, 3.65, 2.0, C.coral);
+title(s, "Deployment", "공개 배포와\n운영 전환을 완료했습니다.", "Vercel 자동 재배포와 AWS 백엔드, MySQL, 결제 연동, 모니터링 구성을 모두 연결했고, 렌더링과 응답 경로도 정리했습니다.", { w: 8.8, h: 1.55 });
+card(s, "Frontend", "Vercel Git 연동\nmain push 자동 재배포\n렌더링 최적화", 0.75, 4.15, 3.65, 2.0, C.green);
+card(s, "Backend", "AWS Docker 배포\nHealth · Metrics\nDB 조회 최적화", 4.82, 4.15, 3.65, 2.0, C.coral);
 card(s, "Payments", "Toss 결제 승인·취소\nWebhook 검증\n수강 등록 자동화", 8.9, 4.15, 3.65, 2.0, C.blue);
 
 // 13 Roadmap

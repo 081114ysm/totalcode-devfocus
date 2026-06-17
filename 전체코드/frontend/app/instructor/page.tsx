@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 
@@ -25,6 +26,8 @@ interface CourseComment {
   id: number;
   content: string;
   created_at: string;
+  lesson: { id: number; title: string; order: number } | null;
+  reply: { content: string; reply_at: string } | null;
   course: { id: number; title: string };
   user: { id: number; nickname: string };
 }
@@ -287,7 +290,12 @@ export default function InstructorPage() {
             </form>
 
             <div className="mt-6 bg-[#F7F7F7] rounded-2xl p-6">
-              <h4 className="font-bold text-[#222222] mb-4">최근 댓글</h4>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h4 className="font-bold text-[#222222]">최근 댓글</h4>
+                <Link href="/instructor/comments" className="text-sm font-semibold text-[#00C471] hover:underline">
+                  전체 댓글 보기
+                </Link>
+              </div>
               <div className="space-y-3">
                 {comments
                   .filter((comment) => comment.course.id === selected.id)
@@ -299,7 +307,11 @@ export default function InstructorPage() {
                         <span>{new Date(comment.created_at).toLocaleString("ko-KR")}</span>
                       </div>
                       <p className="mt-2 text-sm font-medium text-[#00C471]">{comment.course.title}</p>
+                      <p className="mt-1 text-xs text-[#717171]">
+                        {comment.lesson ? `${comment.lesson.order}번째 강의 · ${comment.lesson.title}` : "전체 강의"}
+                      </p>
                       <p className="mt-1 text-sm text-[#222222]">{comment.content}</p>
+                      {comment.reply && <p className="mt-2 rounded-lg bg-[#F3FFF8] p-3 text-sm text-[#222222]"><span className="font-semibold text-[#00C471]">답변:</span> {comment.reply.content}</p>}
                     </article>
                   ))}
                 {comments.filter((comment) => comment.course.id === selected.id).length === 0 && (

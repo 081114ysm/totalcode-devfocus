@@ -55,6 +55,9 @@ export default function Navbar() {
               {(role === "instructor" || role === "admin") && (
                 <Link href="/instructor" className={linkClass("/instructor")}>강사</Link>
               )}
+              {(role === "instructor" || role === "admin") && (
+                <Link href="/instructor/comments" className={linkClass("/instructor/comments")}>댓글 관리</Link>
+              )}
               <Link href="/dashboard" className={linkClass("/dashboard")}>대시보드</Link>
               <Link href="/mypage" className={linkClass("/mypage")}>마이페이지</Link>
               <span className="text-[#00C471] font-semibold">{nickname}님</span>

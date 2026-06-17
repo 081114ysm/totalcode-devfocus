@@ -16,6 +16,8 @@ interface Comment {
   id: number;
   content: string;
   user: { id: number; nickname: string };
+  lesson: { id: number; title: string; order: number } | null;
+  reply: { content: string; reply_at: string } | null;
   created_at: string;
 }
 
@@ -41,6 +43,7 @@ export default function CourseDetailPage() {
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [commentText, setCommentText] = useState("");
+  const [selectedLessonId, setSelectedLessonId] = useState<number | "">("");
   const [message, setMessage] = useState("");
   const [rating,setRating]=useState(5); const [reviewText,setReviewText]=useState("");
   const [progress,setProgress]=useState<CourseProgress|null>(null);
@@ -81,12 +84,13 @@ export default function CourseDetailPage() {
     try {
       const { comment } = await api(`/courses/${params.id}/comment`, {
         method: "POST",
-        body: JSON.stringify({ content: commentText }),
+        body: JSON.stringify({ content: commentText, lessonId: selectedLessonId || undefined }),
       });
       setCourse((prev) =>
         prev ? { ...prev, comments: [comment, ...prev.comments] } : prev
       );
       setCommentText("");
+      setSelectedLessonId("");
     } catch {}
   };
 
@@ -186,18 +190,33 @@ export default function CourseDetailPage() {
           댓글 ({course.comments.length})
         </h2>
         <form onSubmit={handleComment} className="flex gap-2 mb-8">
-          <input
-            type="text"
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder={isLoggedIn ? "댓글을 입력하세요..." : "로그인 후 댓글을 작성할 수 있습니다"}
-            className="flex-1 border border-[#ebebeb] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm"
-            disabled={!isLoggedIn}
-          />
+          <div className="flex-1 space-y-2">
+            <select
+              value={selectedLessonId}
+              onChange={(e) => setSelectedLessonId(e.target.value ? Number(e.target.value) : "")}
+              className="w-full border border-[#ebebeb] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm bg-white"
+              disabled={!isLoggedIn || course.lessons.length === 0}
+            >
+              <option value="">전체 강의에 대한 댓글</option>
+              {course.lessons.map((lesson) => (
+                <option key={lesson.id} value={lesson.id}>
+                  {lesson.order}번째 강의 · {lesson.title}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder={isLoggedIn ? "댓글을 입력하세요..." : "로그인 후 댓글을 작성할 수 있습니다"}
+              className="w-full border border-[#ebebeb] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#00C471] text-sm"
+              disabled={!isLoggedIn}
+            />
+          </div>
           <button
             type="submit"
             disabled={!isLoggedIn}
-            className="px-6 py-3 bg-[#00C471] text-white rounded-xl hover:bg-[#00A65A] transition-colors disabled:opacity-40 text-sm font-medium"
+            className="px-6 py-3 bg-[#00C471] text-white rounded-xl hover:bg-[#00A65A] transition-colors disabled:opacity-40 text-sm font-medium h-fit"
           >
             작성
           </button>
@@ -211,7 +230,22 @@ export default function CourseDetailPage() {
                   {new Date(comment.created_at).toLocaleString("ko-KR")}
                 </span>
               </div>
+              <div className="mb-2 flex flex-wrap gap-2 text-[11px] text-[#717171]">
+                {comment.lesson ? (
+                  <span className="rounded-full bg-white px-2 py-1 border border-[#ebebeb]">
+                    {comment.lesson.order}번째 강의 · {comment.lesson.title}
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-white px-2 py-1 border border-[#ebebeb]">전체 강의</span>
+                )}
+              </div>
               <p className="text-[#717171] text-sm leading-relaxed">{comment.content}</p>
+              {comment.reply && (
+                <div className="mt-3 rounded-xl border border-[#00C471]/15 bg-[#E9FBF2] p-4">
+                  <p className="text-[11px] font-bold tracking-[2px] text-[#00C471] uppercase">Instructor reply</p>
+                  <p className="mt-2 text-sm text-[#222222] leading-relaxed">{comment.reply.content}</p>
+                </div>
+              )}
             </div>
           ))}
           {course.comments.length === 0 && (
