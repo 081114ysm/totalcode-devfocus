@@ -319,7 +319,18 @@ export const getMyEnrollments = async (req, res) => {
        WHERE e.user_id = ? ORDER BY e.enrolled_at DESC`,
       [userId, userId, userId]
     );
-    res.json(rows.map((row)=>({ ...row, completion_rate:row.total_lessons?Math.round((row.completed_lessons/row.total_lessons)*100):0 })));
+    res.json(rows.map((row) => {
+      const completedLessons = Number(row.completed_lessons || 0);
+      const totalLessons = Number(row.total_lessons || 0);
+      const completionRate = totalLessons ? Math.round((completedLessons / totalLessons) * 100) : 0;
+      return {
+        ...row,
+        completed_lessons: completedLessons,
+        watched_lessons: completedLessons,
+        total_lessons: totalLessons,
+        completion_rate: completionRate,
+      };
+    }));
   } catch (err) {
     logger.error("getMyEnrollments error", { error: err.message });
     res.status(500).json({ error: "서버 에러" });

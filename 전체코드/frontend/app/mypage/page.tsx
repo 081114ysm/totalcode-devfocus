@@ -18,7 +18,9 @@ interface Enrollment {
   category: string;
   enrolled_at: string;
   total_lessons: number;
-  watched_lessons: number;
+  watched_lessons?: number;
+  completed_lessons?: number;
+  completion_rate?: number;
 }
 
 export default function MyPage() {
@@ -48,8 +50,9 @@ export default function MyPage() {
     enrollments.length > 0
       ? Math.round(
           enrollments.reduce((sum, c) => {
+            const done = c.watched_lessons ?? c.completed_lessons ?? 0;
             if (c.total_lessons === 0) return sum;
-            return sum + (c.watched_lessons / c.total_lessons) * 100;
+            return sum + (done / c.total_lessons) * 100;
           }, 0) / enrollments.length
         )
       : 0;
@@ -94,7 +97,7 @@ export default function MyPage() {
               완료 강의
             </p>
             <p className="text-4xl font-extrabold text-[#222222]">
-              {enrollments.filter((c) => c.total_lessons > 0 && c.watched_lessons >= c.total_lessons).length}개
+              {enrollments.filter((c) => c.total_lessons > 0 && (c.watched_lessons ?? c.completed_lessons ?? 0) >= c.total_lessons).length}개
             </p>
           </div>
         </div>
@@ -140,9 +143,11 @@ export default function MyPage() {
           <div className="space-y-4">
             {enrollments.map((course) => {
               const progress =
-                course.total_lessons > 0
-                  ? Math.round((course.watched_lessons / course.total_lessons) * 100)
-                  : 0;
+                course.completion_rate ??
+                (course.total_lessons > 0
+                  ? Math.round(((course.watched_lessons ?? course.completed_lessons ?? 0) / course.total_lessons) * 100)
+                  : 0);
+              const watchedLessons = course.watched_lessons ?? course.completed_lessons ?? 0;
 
               return (
                 <Link key={course.id} href={`/course/${course.id}`}>
@@ -162,7 +167,7 @@ export default function MyPage() {
                     <div>
                       <div className="flex justify-between text-sm mb-2">
                         <span className="text-[#717171]">
-                          {course.watched_lessons} / {course.total_lessons} 강의 완료
+                          {watchedLessons} / {course.total_lessons} 강의 완료
                         </span>
                         <span className={`font-semibold ${progress === 100 ? "text-[#00C471]" : "text-[#222222]"}`}>
                           {progress}%
