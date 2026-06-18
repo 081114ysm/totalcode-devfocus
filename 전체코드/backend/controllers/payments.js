@@ -89,3 +89,75 @@ export async function requestRefund(req, res) {
 
   res.status(201).json({ message: "환불 신청이 접수되었습니다" });
 }
+
+export async function getAllRefundRequests(req, res) {
+  const [requests] = await db.query(
+    `SELECT rr.id, rr.reason, rr.status, rr.created_at, rr.reviewed_at,
+            p.id AS payment_id, p.amount, p.status AS payment_status, p.payment_key,
+            c.title AS course_title,
+            u.nickname AS requester_nickname, u.email AS requester_email,
+            reviewer.nickname AS reviewer_nickname
+       FROM refund_requests rr
+       JOIN payments p ON p.id = rr.payment_id
+       JOIN courses c ON c.id = rr.course_id
+       JOIN users u ON u.id = rr.user_id
+       LEFT JOIN users reviewer ON reviewer.id = rr.reviewed_by
+      ORDER BY rr.created_at DESC`
+  );
+  res.json({ refunds: requests });
+}
+
+export async function reviewRefundRequest(req, res) {
+  const refundId = Number(req.params.refundId);
+  const action = String(req.body.action || "").trim();
+  if (!["approve", "reject"].includes(action)) {
+    return res.status(400).json({ error: "유효하지 않은 처리입니다" });
+  }
+
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+    const [rows] = await connection.query(
+      `SELECT rr.id, rr.status, rr.payment_id, p.payment_key, p.status AS payment_status, p.amount
+         FROM refund_requests rr
+         JOIN payments p ON p.id = rr.payment_id
+        WHERE rr.id = ?
+        FOR UPDATE`,
+      [refundId]
+    );
+    const refund = rows[0];
+    if (!refund) {
+      await connection.rollback();
+      return res.status(404).json({ error: "환불 신청을 찾을 수 없습니다" });
+    }
+    if (refund.status !== "requested") {
+      await connection.rollback();
+      return res.status(409).json({ error: "이미 처리된 환불 신청입니다" });
+    }
+
+    if (action === "approve") {
+      if (process.env.ALLOW_MOCK_PAYMENT !== "true" && !String(refund.payment_key || "").startsWith("demo_")) {
+        await cancelTossPayment(refund.payment_key, "관리자 환불 승인");
+      }
+      await connection.query("UPDATE payments SET status='cancelled',cancelled_at=NOW() WHERE id=?", [refund.payment_id]);
+      await connection.query(
+        "UPDATE refund_requests SET status='approved', reviewed_by=?, reviewed_at=NOW() WHERE id=?",
+        [req.user.id, refundId]
+      );
+      await connection.commit();
+      return res.json({ message: "환불이 승인되었습니다" });
+    }
+
+    await connection.query(
+      "UPDATE refund_requests SET status='rejected', reviewed_by=?, reviewed_at=NOW() WHERE id=?",
+      [req.user.id, refundId]
+    );
+    await connection.commit();
+    res.json({ message: "환불이 거절되었습니다" });
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+}

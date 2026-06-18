@@ -15,6 +15,7 @@ import {
   markAsPaid,
 } from "../controllers/settlements.js";
 import { cancelPayment, getAllPayments } from "../controllers/payments.js";
+import { getAllRefundRequests, reviewRefundRequest } from "../controllers/payments.js";
 
 const router = express.Router();
 
@@ -28,6 +29,8 @@ router.get("/courses", getAllCourses);
 router.delete("/courses/:courseId", adminDeleteCourse);
 router.get("/payments", getAllPayments);
 router.post("/payments/:paymentId/cancel", cancelPayment);
+router.get("/refunds", getAllRefundRequests);
+router.patch("/refunds/:refundId", reviewRefundRequest);
 router.get("/operations", getOperations);
 
 // 정산 관리

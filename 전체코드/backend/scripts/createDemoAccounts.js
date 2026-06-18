@@ -150,6 +150,17 @@ if (instructorRow?.id) {
       [studentId, studentId, studentId]
     );
 
+    const [[completedPayment]] = await db.query(
+      "SELECT id FROM payments WHERE payment_key = 'demo_payment_completed_1' LIMIT 1"
+    );
+    if (completedPayment?.id) {
+      await db.query("DELETE FROM refund_requests WHERE payment_id = ?", [completedPayment.id]);
+      await db.query(
+        "INSERT INTO refund_requests (payment_id, user_id, course_id, reason, status, created_at) VALUES (?, ?, ?, ?, 'requested', NOW() - INTERVAL 30 MINUTE)",
+        [completedPayment.id, studentId, 1, "강의는 좋았지만 개인 사정으로 환불을 요청합니다."]
+      );
+    }
+
     await db.query("DELETE FROM job_logs WHERE job_name LIKE 'demo_%'");
     await db.query(
       `INSERT INTO job_logs (job_name, status, message, created_at) VALUES
