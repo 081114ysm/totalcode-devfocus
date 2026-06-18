@@ -56,6 +56,19 @@ await db.query(`CREATE TABLE IF NOT EXISTS webhook_events (
   UNIQUE KEY unique_provider_event (provider, event_id)
 )`);
 
+await db.query(`CREATE TABLE IF NOT EXISTS refund_requests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  payment_id INT NOT NULL,
+  user_id INT NOT NULL,
+  course_id INT NOT NULL,
+  reason VARCHAR(500) NOT NULL,
+  status ENUM('requested','approved','rejected') NOT NULL DEFAULT 'requested',
+  reviewed_by INT DEFAULT NULL,
+  reviewed_at TIMESTAMP NULL DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_refund_request (payment_id)
+)`);
+
 for (const account of accounts) {
   if (!account.email || !account.password || account.password.length < 8) {
     throw new Error(`Invalid credentials for ${account.role}`);

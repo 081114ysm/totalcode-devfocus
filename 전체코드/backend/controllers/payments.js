@@ -40,7 +40,12 @@ export async function confirmPayment(req, res) {
 }
 
 export async function getMyPayments(req, res) {
-  const [payments] = await db.query(`SELECT p.id,p.order_id,p.amount,p.status,p.method,p.receipt_url,p.approved_at,p.created_at,c.id course_id,c.title FROM payments p JOIN courses c ON c.id=p.course_id WHERE p.user_id=? ORDER BY p.created_at DESC`, [req.user.id]);
+  const [payments] = await db.query(`SELECT p.id,p.order_id,p.amount,p.status,p.method,p.receipt_url,p.approved_at,p.created_at,c.id course_id,c.title,
+    rr.status refund_status, rr.reason refund_reason, rr.created_at refund_requested_at
+    FROM payments p
+    JOIN courses c ON c.id=p.course_id
+    LEFT JOIN refund_requests rr ON rr.payment_id = p.id
+    WHERE p.user_id=? ORDER BY p.created_at DESC`, [req.user.id]);
   res.json({ payments });
 }
 
@@ -56,4 +61,31 @@ export async function cancelPayment(req, res) {
   await cancelTossPayment(payment.payment_key, req.body.reason || "관리자 환불");
   await db.query("UPDATE payments SET status='cancelled',cancelled_at=NOW() WHERE id=?", [payment.id]);
   res.json({ message: "결제가 취소되었습니다" });
+}
+
+export async function requestRefund(req, res) {
+  const paymentId = Number(req.params.paymentId);
+  const reason = String(req.body.reason || "").trim();
+  if (!reason) return res.status(400).json({ error: "환불 사유를 입력하세요" });
+
+  const [payments] = await db.query(
+    "SELECT id, user_id, course_id, status FROM payments WHERE id = ? AND user_id = ?",
+    [paymentId, req.user.id]
+  );
+  const payment = payments[0];
+  if (!payment || payment.status !== "completed") {
+    return res.status(404).json({ error: "환불 신청 가능한 결제를 찾을 수 없습니다" });
+  }
+
+  const [existing] = await db.query("SELECT id FROM refund_requests WHERE payment_id = ?", [paymentId]);
+  if (existing[0]) {
+    return res.status(409).json({ error: "이미 환불 신청이 접수되었습니다" });
+  }
+
+  await db.query(
+    "INSERT INTO refund_requests (payment_id, user_id, course_id, reason) VALUES (?, ?, ?, ?)",
+    [payment.id, req.user.id, payment.course_id, reason.slice(0, 500)]
+  );
+
+  res.status(201).json({ message: "환불 신청이 접수되었습니다" });
 }

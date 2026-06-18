@@ -23,10 +23,21 @@ interface Enrollment {
   completion_rate?: number;
 }
 
+interface Payment {
+  id: number;
+  course_id: number;
+  status: string;
+  refund_status?: string | null;
+  refund_reason?: string | null;
+  refund_requested_at?: string | null;
+}
+
 export default function MyPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -42,6 +53,9 @@ export default function MyPage() {
     api("/courses/my")
       .then(setEnrollments)
       .catch(() => {});
+    api<{ payments: Payment[] }>("/payments/my")
+      .then((data) => setPayments(data.payments ?? []))
+      .catch(() => {});
   }, [router]);
 
   if (!user) return <p className="p-8 text-[#717171]">로딩 중...</p>;
@@ -56,6 +70,29 @@ export default function MyPage() {
           }, 0) / enrollments.length
         )
       : 0;
+
+  const paymentByCourse = payments.reduce<Record<number, Payment>>((acc, payment) => {
+    if (payment.status === "completed" && !acc[payment.course_id]) {
+      acc[payment.course_id] = payment;
+    }
+    return acc;
+  }, {});
+
+  const requestRefund = async (paymentId: number, courseTitle: string) => {
+    const reason = prompt(`"${courseTitle}" 환불 사유를 입력하세요`, "단순 변심으로 환불 신청");
+    if (!reason) return;
+    try {
+      await api(`/payments/${paymentId}/refund-request`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      });
+      setMessage("환불 신청이 접수되었습니다.");
+      const result = await api<{ payments: Payment[] }>("/payments/my");
+      setPayments(result.payments ?? []);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "환불 신청 실패");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -78,6 +115,11 @@ export default function MyPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-8 py-12">
+        {message && (
+          <div className="mb-6 rounded-2xl bg-[#E9FBF2] px-4 py-3 text-sm font-medium text-[#00C471]">
+            {message}
+          </div>
+        )}
         {/* Stat cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
           <div className="bg-[#F7F7F7] rounded-2xl p-8">
@@ -148,6 +190,8 @@ export default function MyPage() {
                   ? Math.round(((course.watched_lessons ?? course.completed_lessons ?? 0) / course.total_lessons) * 100)
                   : 0);
               const watchedLessons = course.watched_lessons ?? course.completed_lessons ?? 0;
+              const payment = paymentByCourse[course.id];
+              const canRefund = payment && payment.status === "completed" && !payment.refund_status;
 
               return (
                 <Link key={course.id} href={`/course/${course.id}`}>
@@ -184,6 +228,35 @@ export default function MyPage() {
                     <p className="text-xs text-[#717171] mt-3">
                       수강 시작: {new Date(course.enrolled_at).toLocaleDateString("ko-KR")}
                     </p>
+                    {payment && (
+                      <div className="mt-4 flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full px-3 py-1 text-[11px] font-bold ${
+                            payment.refund_status
+                              ? "bg-amber-50 text-amber-700"
+                              : "bg-[#E9FBF2] text-[#00C471]"
+                          }`}
+                        >
+                          {payment.refund_status ? `환불 ${payment.refund_status}` : "결제 완료"}
+                        </span>
+                        {canRefund && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              requestRefund(payment.id, course.title);
+                            }}
+                            className="rounded-full bg-zinc-900 px-4 py-1.5 text-xs font-bold text-white"
+                          >
+                            환불 신청
+                          </button>
+                        )}
+                        {payment.refund_status && payment.refund_reason && (
+                          <span className="text-xs text-zinc-500">사유: {payment.refund_reason}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </Link>
               );
