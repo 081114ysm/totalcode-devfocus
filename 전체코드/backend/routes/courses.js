@@ -24,7 +24,7 @@ const optionalAuth = (req, res, next) => {
   next();
 };
 
-router.get("/", getCourses);
+router.get("/", optionalAuth, getCourses);
 router.get("/categories", getCategories);
 router.get("/my", authMiddleware, getMyEnrollments);
 router.get("/:courseId", optionalAuth, getCourseDetail);

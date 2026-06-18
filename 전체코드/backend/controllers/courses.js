@@ -24,6 +24,11 @@ export const getCourses = async (req, res) => {
     }
 
     const [rows] = await db.query(sql, params);
+    const enrolledCourseIds = new Set();
+    if (req.user?.id) {
+      const [enrollRows] = await db.query("SELECT course_id FROM enrollments WHERE user_id = ?", [req.user.id]);
+      enrollRows.forEach((row) => enrolledCourseIds.add(row.course_id));
+    }
     const courses = rows.map(c => ({
       id: c.id,
       title: c.title,
@@ -36,6 +41,7 @@ export const getCourses = async (req, res) => {
       lessonCount: c.lessonCount,
       likeCount: c.likeCount,
       enrollmentCount: c.enrollmentCount,
+      enrolled: enrolledCourseIds.has(c.id),
       created_at: c.created_at,
     }));
     res.json({ courses });

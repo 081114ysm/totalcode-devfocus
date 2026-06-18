@@ -11,6 +11,7 @@ interface Course {
   category?: string;
   level?: string;
   price?: number;
+  enrolled?: boolean;
 }
 
 const TOPICS = ["프론트엔드", "백엔드", "데이터베이스", "DevOps", "AI", "커리어"];
@@ -62,7 +63,7 @@ export default function Home() {
                     <span className="absolute right-5 top-5 rounded-full bg-white/80 px-3 py-1 text-xs font-bold text-[#475467] backdrop-blur">{course.category || "개발"}</span>
                     <span className="max-w-[85%] text-2xl font-black leading-tight tracking-[-0.03em] transition-transform group-hover:-translate-y-1">{course.title}</span>
                   </div>
-                  <div className="px-1 pt-5"><h3 className="text-lg font-bold tracking-[-0.02em]">{course.title}</h3><p className="mt-2 line-clamp-2 text-sm leading-6 text-[#667085]">{course.description}</p><div className="mt-4 flex items-center justify-between text-sm"><span className="font-medium text-[#667085]">{course.level || "입문"}</span><strong>{course.price ? `${course.price.toLocaleString()}원` : "무료"}</strong></div></div>
+                  <div className="px-1 pt-5"><h3 className="text-lg font-bold tracking-[-0.02em]">{course.title}</h3><p className="mt-2 line-clamp-2 text-sm leading-6 text-[#667085]">{course.description}</p><div className="mt-4 flex items-center justify-between text-sm"><span className="font-medium text-[#667085]">{course.level || "입문"}</span><strong>{course.enrolled ? "계속 보기" : course.price ? `${course.price.toLocaleString()}원` : "무료"}</strong></div>{course.enrolled&&<span className="mt-3 inline-flex rounded-full bg-[#e8faf0] px-3 py-1 text-[11px] font-bold text-[#008f52]">수강 중</span>}</div>
                 </Link>
               ))}
             </div>

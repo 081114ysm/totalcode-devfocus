@@ -12,6 +12,7 @@ interface Course {
   category: string;
   price: number;
   level: string;
+  enrolled?: boolean;
 }
 
 export default function CoursesPage() {
@@ -112,8 +113,13 @@ export default function CoursesPage() {
                     <p className="line-clamp-2 text-sm leading-6 text-[#667085]">{course.description}</p>
                     <div className="mt-4 flex items-center justify-between">
                       <span className="text-xs font-semibold text-zinc-500">{course.level}</span>
-                      <strong>{course.price ? `${course.price.toLocaleString()}원` : "무료"}</strong>
+                      <strong>{course.enrolled ? "계속 보기" : course.price ? `${course.price.toLocaleString()}원` : "무료"}</strong>
                     </div>
+                    {course.enrolled && (
+                      <span className="mt-3 inline-flex rounded-full bg-[#E9FBF2] px-3 py-1 text-[11px] font-bold text-[#00C471]">
+                        수강 중
+                      </span>
+                    )}
                   </div>
                 </div>
               </Link>
