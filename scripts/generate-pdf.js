@@ -3,196 +3,359 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const outPath = path.join(__dirname, "..", "제출물", "DevFocus_발표자료.pdf");
-const doc = new PDFDocument({ size: "A4", layout: "landscape", margin: 0, autoFirstPage: false });
+
+// MacBook 14" (3024×1964) 비율 = 1.540:1
+const W = 841.89;
+const H = 547;
+
+const doc = new PDFDocument({ margin: 0, autoFirstPage: false });
 doc.pipe(fs.createWriteStream(outPath));
 
-const W = 841.89;
-const H = 595.28;
+doc.registerFont("KR",      "/tmp/devfocus-pdf/NotoSansKR-Regular.ttf");
+doc.registerFont("KR-Bold", "/tmp/devfocus-pdf/NotoSansKR-Bold.ttf");
+
 const C = {
-  coral: "#FF5A5F",
-  coralSoft: "#FFF1F1",
-  ink: "#1F1F1F",
-  gray: "#667085",
-  line: "#E7E7E7",
-  paper: "#FFFFFF",
-  cream: "#FFF9F5",
-  green: "#00A86B",
-  blue: "#4568DC",
-  yellow: "#FFC857",
-  dark: "#1F1F1F",
+  coral: "#FF5A5F", ink: "#1F1F1F", gray: "#667085",
+  line:  "#E7E7E7", paper: "#FFFFFF",
+  green: "#00A86B", blue:  "#4568DC", yellow: "#FFC857", dark: "#1F1F1F",
 };
 
 function newSlide(bg = C.paper) {
-  doc.addPage({ size: [W, H], layout: "landscape", margin: 0 });
+  doc.addPage({ size: [W, H], margin: 0 });
   doc.rect(0, 0, W, H).fill(bg);
 }
 
 function footer(n, dark = false) {
-  doc.fillColor(dark ? "#AFAFAF" : "#888").font("Helvetica").fontSize(9).text("DEVFOCUS", 36, H - 24);
-  doc.text(String(n).padStart(2, "0"), W - 70, H - 24, { width: 34, align: "right" });
+  doc.fillColor(dark ? "#AFAFAF" : "#999").font("KR").fontSize(9)
+     .text("DEVFOCUS  P3", 36, H - 22);
+  doc.text(String(n).padStart(2, "0"), W - 68, H - 22, { width: 32, align: "right" });
 }
 
-function label(text, y = 44, dark = false) {
-  doc.fillColor(C.coral).font("Helvetica-Bold").fontSize(10).text(text.toUpperCase(), 42, y, { characterSpacing: 2 });
+function label(text, y = 36, dark = false) {
+  doc.fillColor(C.coral).font("KR-Bold").fontSize(10)
+     .text(text.toUpperCase(), 42, y, { characterSpacing: 1.5 });
 }
 
-function heading(text, y = 68, dark = false, size = 28, width = 520) {
-  doc.fillColor(dark ? C.paper : C.ink).font("Helvetica-Bold").fontSize(size).text(text, 42, y, { width, lineGap: 2 });
+function heading(text, y = 52, dark = false, size = 22, width = 560) {
+  doc.fillColor(dark ? C.paper : C.ink).font("KR-Bold").fontSize(size)
+     .text(text, 42, y, { width, lineGap: 3 });
 }
 
-function body(text, y = 170, dark = false, width = 520) {
+function body(text, y = 132, dark = false, width = 760) {
   if (!text) return;
-  doc.fillColor(dark ? "#D7D7D7" : C.gray).font("Helvetica").fontSize(14).text(text, 42, y, { width, lineGap: 4 });
+  doc.fillColor(dark ? "#D0D0D0" : C.gray).font("KR").fontSize(13)
+     .text(text, 42, y, { width, lineGap: 4 });
 }
 
 function card(x, y, w, h, accent, title, text, dark = false) {
-  doc.roundedRect(x, y, w, h, 14).fillAndStroke(dark ? "#202020" : C.paper, C.line);
-  doc.rect(x, y, 6, h).fill(accent);
-  doc.fillColor(dark ? C.paper : C.ink).font("Helvetica-Bold").fontSize(15).text(title, x + 18, y + 18, { width: w - 30 });
-  doc.fillColor(dark ? "#D0D0D0" : C.gray).font("Helvetica").fontSize(11).text(text, x + 18, y + 48, { width: w - 30, height: h - 62, lineGap: 3, ellipsis: true });
+  doc.roundedRect(x, y, w, h, 12).fillAndStroke(dark ? "#202020" : C.paper, C.line);
+  doc.rect(x, y, 5, h).fill(accent);
+  doc.fillColor(dark ? C.paper : C.ink).font("KR-Bold").fontSize(14)
+     .text(title, x + 16, y + 16, { width: w - 28 });
+  doc.fillColor(dark ? "#D0D0D0" : C.gray).font("KR").fontSize(11)
+     .text(text, x + 16, y + 46, { width: w - 28, height: h - 62, lineGap: 4, ellipsis: true });
 }
 
 function metric(x, y, value, text, color) {
-  doc.fillColor(color).font("Helvetica-Bold").fontSize(28).text(value, x, y, { width: 150 });
-  doc.fillColor(C.gray).font("Helvetica").fontSize(10.5).text(text, x, y + 36, { width: 155 });
+  doc.fillColor(color).font("KR-Bold").fontSize(36).text(value, x, y, { width: 200 });
+  doc.fillColor(C.gray).font("KR").fontSize(11).text(text, x, y + 48, { width: 200 });
 }
 
-// 1 cover
+function infoBox(y, h, accentColor, title, text) {
+  doc.rect(42, y, W - 84, h).fill("#F8F8FB");
+  doc.rect(42, y, 4, h).fill(accentColor);
+  doc.fillColor(C.ink).font("KR-Bold").fontSize(12).text(title, 58, y + 16);
+  doc.fillColor(C.gray).font("KR").fontSize(11)
+     .text(text, 58, y + 38, { width: W - 116, lineGap: 4 });
+}
+
+function statsBar(y, items) {
+  doc.moveTo(42, y).lineTo(W - 42, y).lineWidth(1).stroke(C.line);
+  items.forEach(([val, desc], i) => {
+    const x = 42 + i * ((W - 84) / items.length);
+    const w = (W - 84) / items.length;
+    doc.fillColor(C.coral).font("KR-Bold").fontSize(15).text(val,  x, y + 12, { width: w, align: "center" });
+    doc.fillColor(C.gray).font("KR").fontSize(9.5).text(desc,       x, y + 34, { width: w, align: "center" });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// 1  COVER
+// ─────────────────────────────────────────────────────────────
 newSlide(C.dark);
-doc.circle(735, 92, 118).fill(C.coral);
-doc.circle(760, 418, 62).fill(C.yellow);
-doc.fillColor(C.coral).font("Helvetica-Bold").fontSize(10).text("DEVFOCUS PITCH DECK", 42, 42, { characterSpacing: 2 });
-doc.fillColor(C.paper).font("Helvetica-Bold").fontSize(34).text("개발자 학습의\n모든 순간을 잇다.", 42, 95, { width: 430, lineGap: 3 });
-doc.fillColor("#D0D0D0").font("Helvetica").fontSize(15).text("강의 탐색부터 결제, 완강, 강사 운영과 모니터링까지 하나의 제품 경험으로 연결한 개발자 학습 플랫폼", 42, 230, { width: 470, lineGap: 4 });
-doc.fillColor("#AFAFAF").fontSize(10).text("P1 · P2 · P3  |  2026.06.15", 42, 530);
+doc.circle(715, 72, 95).fill(C.coral);
+doc.circle(735, 380, 55).fill(C.yellow);
+// 프로젝트 한 줄 소개
+doc.fillColor(C.coral).font("KR-Bold").fontSize(10)
+   .text("DEVFOCUS", 42, 38, { characterSpacing: 1.5 });
+doc.fillColor("#888").font("KR").fontSize(12)
+   .text("개발자를 위한 강의 플랫폼 — 강의 탐색 · 결제 · 학습 · 강사 운영 · 모니터링까지 하나의 서비스", 42, 57, { width: 640 });
+// 구분선
+doc.moveTo(42, 78).lineTo(640, 78).lineWidth(1).stroke("#333");
+// P3 타이틀
+doc.fillColor(C.coral).font("KR-Bold").fontSize(9)
+   .text("P3  PITCH DECK", 42, 88, { characterSpacing: 1.5 });
+doc.fillColor(C.paper).font("KR-Bold").fontSize(28)
+   .text("P2를 넘어\n운영 가능한 서비스로.", 42, 105, { width: 480, lineGap: 5 });
+doc.fillColor("#B0B0B0").font("KR").fontSize(13)
+   .text("결제 모듈 · 스케줄러 · 알림 · Webhook · 모니터링\n보안 강화 · 코드 최적화 · AWS 배포", 42, 218, { width: 480, lineGap: 6 });
+doc.moveTo(42, 308).lineTo(340, 308).lineWidth(1).stroke("#444");
+doc.fillColor("#888").font("KR").fontSize(10)
+   .text("P3  |  2026.06.15  |  totalcode-devfocus.vercel.app", 42, 321);
 
-// 2 overview
+// ─────────────────────────────────────────────────────────────
+// 2  P2 → P3 변경 요약
+// ─────────────────────────────────────────────────────────────
 newSlide(); footer(2);
-label("Overview");
-heading("이 프로젝트는\n무엇을 해결하나요?");
-body("학생, 강사, 관리자 모두가 같은 데이터 위에서 움직이는 개발자 학습 플랫폼입니다.");
-card(42, 250, 245, 145, C.coral, "학생", "강의 탐색, 결제, 진도 저장, 수강평을 한 흐름으로 연결합니다.");
-card(298, 250, 245, 145, C.blue, "강사", "강의와 레슨을 직접 관리하고 수강생과 매출을 확인합니다.");
-card(554, 250, 245, 145, C.green, "관리자", "회원, 결제, 환불, Webhook, 배치, 로그를 운영 콘솔에서 봅니다.");
+label("P2 → P3");
+heading("P2 인증·권한 위에\n운영 레이어를 쌓았습니다.");
+body("P2에서 완성한 JWT·역할 기반 권한·Rate Limit 기반에 결제·알림·스케줄러·모니터링·보안을 추가했습니다.");
 
-// 3 problem
-newSlide(); footer(3);
-label("Problem");
-heading("학습은 여전히\n너무 많은 곳에 흩어져 있습니다.");
-body("강의는 한 곳에서 보고, 질문과 기록은 다른 곳에서 관리합니다.");
-metric(52, 285, "5+", "학습자가 오가는 도구", C.coral);
-metric(290, 285, "0", "연결된 학습 맥락", C.ink);
-metric(528, 285, "높음", "중도 이탈 가능성", C.blue);
+// 좌측: P2에서 유지 / 우측: P3에서 추가
+doc.moveTo(42, 174).lineTo(W - 42, 174).lineWidth(1).stroke(C.line);
 
-// 4 solution
-newSlide(); footer(4);
-label("Solution");
-heading("한 번의 로그인으로\n배움이 끝까지 이어집니다.");
-body("DevFocus는 학습 흐름과 운영 흐름을 하나의 서비스로 묶습니다.");
-card(42, 250, 180, 150, C.coral, "탐색", "나에게 맞는 강의");
-card(238, 250, 180, 150, C.cream, "결제", "검증된 주문 흐름");
-card(434, 250, 180, 150, C.blue, "학습", "이어보기와 자동 저장");
-card(630, 250, 168, 150, C.coral, "성장", "완강률과 학습 기록", true);
-
-// 5 product
-newSlide(); footer(5);
-label("Product");
-heading("학생에게는 단순하게.\n기능은 충분하게.");
-card(42, 220, 245, 225, C.coral, "이어보기", "마지막 학습 위치를 기억하고 다음 레슨으로 자연스럽게 연결합니다.");
-card(298, 220, 245, 225, C.blue, "자동 진도 저장", "30초 단위 저장과 90% 완강 기준으로 실제 학습 상태를 반영합니다.");
-card(554, 220, 245, 225, C.green, "집중과 질문", "집중 타이머, Q&A, 코드 스니펫으로 학습 전후의 행동까지 지원합니다.");
-
-// 6 roles
-newSlide(); footer(6);
-label("Roles");
-heading("학생, 강사, 관리자가\n같은 데이터를 봅니다.");
-body("역할은 다르지만 서비스 상태와 학습 결과는 하나의 데이터 흐름으로 연결됩니다.");
-card(42, 250, 245, 150, C.coral, "학생", "강의 탐색 · 결제 · 진도 · 수강평 · 집중 기록");
-card(298, 250, 245, 150, C.blue, "강사", "강의와 레슨 CRUD · 수강생 · 매출 · 정산");
-card(554, 250, 245, 150, C.green, "관리자", "회원과 권한 · 결제 · 환불 · 로그 · 배치");
-
-// 7 business
-newSlide(); footer(7);
-label("Business model");
-heading("좋은 강의가 판매될수록\n플랫폼도 함께 성장합니다.");
-body("강의 결제 수익을 기반으로 강사 정산과 플랫폼 수수료를 투명하게 계산합니다.");
-metric(52, 285, "Toss", "실결제 승인·취소 API", C.coral);
-metric(290, 285, "100%", "서버 기준 금액 재검증", C.blue);
-metric(528, 285, "자동", "월별 강사 정산 계산", C.green);
-
-// 8 stages
-newSlide(); footer(8);
-label("Three stages");
-heading("과제 요구사항을\n운영 가능한 제품으로 확장했습니다.");
-card(42, 250, 245, 155, C.coral, "P1 · 서비스", "모바일 프론트엔드, 백엔드 API와 CRUD, MySQL 영구 저장");
-card(298, 250, 245, 155, C.blue, "P2 · 신뢰", "JWT 인증, 역할 기반 권한, 리소스 소유권 검증");
-card(554, 250, 245, 155, C.green, "P3 · 운영", "알림, Scheduler, Webhook, 로그, Health, Metrics, 결제");
-
-// 9 technology
-newSlide(C.dark); footer(9, true);
-label("Technology", 44, true);
-heading("빠르게 만들고,\n명확하게 운영합니다.", 68, true, 28, 530);
-body("단순한 3계층 구조 위에 결제와 알림, 관측성을 연결하고, 렌더링과 DB 조회 경로를 다듬었습니다.", 170, true, 520);
-["Next.js", "Express", "MySQL", "Toss", "Docker"].forEach((t, i) => {
-  const x = 54 + i * 150;
-  doc.fillColor(i === 3 ? C.coral : C.paper).font("Helvetica-Bold").fontSize(16).text(t, x, 300, { width: 110, align: "center" });
-  doc.fillColor("#AFAFAF").font("Helvetica").fontSize(10).text(["UI + build", "API", "DB index", "결제", "실행"][i], x, 326, { width: 110, align: "center" });
-  if (i < 4) doc.fillColor("#666").fontSize(18).text("→", x + 112, 304, { width: 18, align: "center" });
+// P2 유지 박스
+doc.roundedRect(42, 184, 370, 300, 12).fillAndStroke("#F8F8FB", C.line);
+doc.rect(42, 184, 5, 300).fill(C.gray);
+doc.fillColor(C.gray).font("KR-Bold").fontSize(12).text("P2에서 가져온 것", 58, 200);
+const p2items = [
+  "JWT 인증 (httpOnly 쿠키)",
+  "역할 기반 권한 (학생 / 강사 / 관리자)",
+  "리소스 소유권 검증 미들웨어",
+  "Rate Limit (기본)",
+  "MySQL 영구 저장 · 18개 테이블",
+  "42개 API 엔드포인트",
+];
+p2items.forEach((t, i) => {
+  doc.fillColor(C.gray).font("KR").fontSize(11).text("·  " + t, 58, 228 + i * 22, { width: 340 });
 });
 
-// 10 operations
-newSlide(); footer(10);
-label("Operations");
-heading("문제가 생긴 뒤가 아니라\n응답 속도와 상태를 먼저 봅니다.");
-body("운영자는 요청, 배치, Webhook, DB 상태와 함께 응답 시간과 실패 지점을 한 흐름에서 추적할 수 있습니다.");
-metric(52, 285, "JSON", "구조화 요청 로그", C.coral);
-metric(290, 285, "p95", "응답 시간 추적", C.green);
-metric(528, 285, "/health", "API와 DB 상태 확인", C.blue);
+// P3 추가 박스
+doc.roundedRect(426, 184, 374, 300, 12).fillAndStroke("#FFF8F8", C.line);
+doc.rect(426, 184, 5, 300).fill(C.coral);
+doc.fillColor(C.coral).font("KR-Bold").fontSize(12).text("P3에서 추가한 것", 442, 200);
+const p3items = [
+  "Toss 결제 연동 (데모) + Webhook HMAC",
+  "스케줄러 4개 (node-schedule)",
+  "Discord / 이메일 알림 시스템",
+  "/health · /metrics 모니터링",
+  "winston 구조화 JSON 로그",
+  "SQL Injection · XSS · Helmet 보안",
+  "복합 인덱스 16개 · SSR 최적화 · 배포",
+];
+p3items.forEach((t, i) => {
+  doc.fillColor(C.ink).font("KR").fontSize(11).text("·  " + t, 442, 228 + i * 22, { width: 344 });
+});
 
-// 11 validation
+// ─────────────────────────────────────────────────────────────
+// 3  결제 모듈
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(3);
+label("Payment Module");
+heading("결제 구조는 완성.\n실키 발급 후 즉시 전환 가능합니다.");
+body("Toss Payments 테스트 키로 데모 구현 완료. 서버 검증·Webhook·환불 로직은 실결제와 동일한 구조입니다.");
+doc.moveTo(42, 174).lineTo(W - 42, 174).lineWidth(1).stroke(C.line);
+metric(68,  195, "데모",   "test_ck_* 키 사용 중",  C.coral);
+metric(300, 195, "100%",  "서버 금액 재검증",       C.blue);
+metric(540, 195, "HMAC",  "Webhook 서명 검증",      C.green);
+infoBox(310, 90, C.coral,
+  "결제 흐름 (실결제 전환 시 동일 구조 유지)",
+  "클라이언트 요청 → Toss 결제창 열기 → 서버 금액 재검증 → 승인 확정 → 수강 등록 → 강사 정산 적립\n" +
+  "실결제 전환: clientKey·secretKey를 Toss 라이브 키로 교체 → 테스트 통과 → 배포");
+infoBox(416, 80, C.yellow,
+  "다음 단계: 실결제 전환",
+  "Toss 사업자 등록 후 라이브 API 키 발급 → .env TOSS_SECRET_KEY 교체 → E2E 결제 테스트 → 프로덕션 배포");
+
+// ─────────────────────────────────────────────────────────────
+// 4  스케줄러
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(4);
+label("Scheduler");
+heading("4개의 배치가\n서비스를 자동 운영합니다.");
+body("node-schedule 기반. DISABLE_SCHEDULER=false 로 운영 활성화 상태이며, 실행 결과를 job_logs 테이블에 100% 기록합니다.");
+doc.moveTo(42, 174).lineTo(W - 42, 174).lineWidth(1).stroke(C.line);
+[
+  [42,  C.coral,  "결제 만료",    "매시간 정각\n미승인 결제 자동 취소\n결제 상태 → expired\n수강 미등록 처리"],
+  [240, C.blue,   "세션 정리",   "매일 03:15\n만료 세션 DB 삭제\n불필요 토큰 정리\n저장 공간 확보"],
+  [438, C.green,  "강사 정산",   "매월 1일 00:00\n전월 결제 집계\n정산 금액 자동 계산\n강사별 내역 DB 저장"],
+  [636, C.yellow, "운영 리포트", "매주 월요일 09:00\n주간 통계 집계\nDiscord 자동 전송\n회원·결제·완강 수치"],
+].forEach(([x, color, title, text]) => {
+  card(x, 184, 185, 280, color, title, text);
+});
+statsBar(477, [["4개","Cron Job"],["매시간","결제 만료"],["매일","세션 정리"],["매월","강사 정산"],["100%","job_logs 기록"]]);
+
+// ─────────────────────────────────────────────────────────────
+// 5  알림 시스템
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(5);
+label("Notification");
+heading("에러는 즉시,\n주간 리포트는 자동으로.");
+body("Discord Webhook과 이메일(nodemailer) 두 채널로 알림을 발송합니다. Webhook URL·SMTP 설정으로 즉시 활성화 가능.");
+card(42,  180, 374, 250, C.blue,  "Discord Webhook",
+  "에러 발생 즉시 Discord 채널 알림\n스케줄러 배치 실행 결과 전송\n매주 월: 주간 운영 통계 리포트\nWebhook URL 환경변수 설정으로 활성화\n\n현재: DISCORD_WEBHOOK_URL 미설정 → 비활성 상태");
+card(426, 180, 374, 250, C.green, "이메일 (nodemailer)",
+  "결제 완료 확인 메일 발송\n환불 처리 완료 알림\n강사 정산 내역 발송\nSMTP 서버 연결 구조 완성\n\n현재: SMTP_USER/PASS 미설정 → 실발송 대기 중");
+infoBox(444, 65, C.yellow, "활성화 방법",
+  "Discord: .env DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/… 설정\n" +
+  "이메일: SMTP_HOST / SMTP_USER / SMTP_PASS 설정 후 재시작");
+
+// ─────────────────────────────────────────────────────────────
+// 6  Webhook + HMAC
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(6);
+label("Webhook & HMAC");
+heading("결제 이벤트는\n서명으로 검증합니다.");
+body("Toss가 전송하는 결제 이벤트를 HMAC-SHA256 서명으로 검증. 위변조 요청은 즉시 거부합니다.");
+doc.moveTo(42, 174).lineTo(W - 42, 174).lineWidth(1).stroke(C.line);
+metric(68,  195, "HMAC",   "SHA-256 서명 검증",  C.coral);
+metric(300, 195, "멱등성",  "중복 처리 방지",     C.blue);
+metric(540, 195, "즉시",   "서명 불일치 거부",    C.green);
+infoBox(310, 90, C.coral,
+  "Webhook 처리 흐름",
+  "POST /payments/webhook 수신 → HMAC-SHA256(body, secretKey) 검증 → 처리 이력 조회 (멱등성)\n" +
+  "→ 이벤트 타입 분기 (승인·취소·실패) → 수강 상태 갱신 → Discord 알림 발송");
+infoBox(416, 80, C.blue,
+  "보안 포인트",
+  "서명 불일치 즉시 400 반환 · 재생 공격 방지 · 처리 이력을 DB에 기록해 동일 이벤트 중복 실행 차단\n" +
+  "x-toss-signature 헤더 비교 · Buffer.compare로 타이밍 공격 방어");
+
+// ─────────────────────────────────────────────────────────────
+// 7  모니터링 & 로그
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(7);
+label("Monitoring & Logging");
+heading("수치로 상태를 보고\nID로 요청을 추적합니다.");
+body("/health · /metrics 엔드포인트와 winston JSON 로그로 응답속도·DB상태·배치 결과를 실시간 파악합니다.");
+[
+  [42,  C.coral, "/health",      "GET /health\nDB ping 응답 확인\nAPI 서버 uptime\n배포 후 자동 헬스체크\nDocker healthcheck 연동"],
+  [240, C.blue,  "/metrics",     "GET /metrics\n요청 수 카운팅\n평균·최대 응답시간\np95 응답 시간 추적\n엔드포인트별 집계"],
+  [438, C.green, "winston 로그", "JSON 구조화 포맷\nx-request-id 전 구간 연동\nHTTP 요청 자동 기록\n배치·Webhook·에러 레벨 분류"],
+  [636, C.yellow,"x-request-id", "모든 요청에 UUID 부여\n요청 → DB → 응답 추적\n에러 발생 시 ID로 역추적\nDiscord 알림에 ID 포함"],
+].forEach(([x, color, title, text]) => {
+  card(x, 180, 185, 268, color, title, text);
+});
+statsBar(462, [["/health","DB + uptime"],["/metrics","p95 추적"],["JSON","구조화 로그"],["UUID","요청 ID"],["Discord","에러 즉시"]]);
+
+// ─────────────────────────────────────────────────────────────
+// 8  보안 강화
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(8);
+label("Security");
+heading("입력을 차단하고,\n경계를 설정했습니다.");
+body("P2 인증 위에 SQL Injection·XSS·Helmet·엔드포인트별 Rate Limit를 추가해 외부 위협 경계를 완성했습니다.");
+[
+  [42,  C.coral,  "SQL Injection", "mysql2 파라미터 바인딩\n사용자 입력 쿼리 직접 삽입 차단\nORMless 환경에서 안전 쿼리 보장\n모든 DB 쿼리 파라미터화"],
+  [240, C.blue,   "XSS 방어",     "Helmet CSP 헤더 적용\nX-Frame-Options: DENY\nX-Content-Type-Options: nosniff\nContent-Security-Policy 설정"],
+  [438, C.green,  "Rate Limit",   "API: 100 req / 15분\nAuth: 10 req / 15분 (엄격)\n엔드포인트별 분리 적용\nIP 기반 카운팅"],
+  [636, C.yellow, "CORS & 기타",  "화이트리스트 기반 CORS\nJWT httpOnly 쿠키 저장\nHelmet 보안 헤더 묶음\nBcrypt 패스워드 해싱"],
+].forEach(([x, color, title, text]) => {
+  card(x, 180, 185, 275, color, title, text);
+});
+statsBar(469, [["SQL","파라미터 바인딩"],["XSS","Helmet CSP"],["100/15m","API Limit"],["10/15m","Auth Limit"],["CORS","화이트리스트"]]);
+
+// ─────────────────────────────────────────────────────────────
+// 9  코드 최적화 & 리팩토링
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(9);
+label("Optimization & Refactoring");
+heading("DB는 인덱스로,\n화면은 SSR로 빠르게.");
+body("복합 인덱스 16개 추가로 JOIN 쿼리 속도를 높이고, Next.js SSR·Image 최적화로 프론트 초기 렌더링 시간을 단축했습니다.");
+doc.moveTo(42, 174).lineTo(W - 42, 174).lineWidth(1).stroke(C.line);
+metric(68,  195, "16개",  "복합 인덱스 추가",   C.coral);
+metric(300, 195, "SSR",   "Next.js 서버 렌더링", C.blue);
+metric(540, 195, "5.6MB", "프로덕션 빌드 크기", C.green);
+infoBox(310, 90, C.blue,
+  "DB 최적화 상세",
+  "복합 인덱스: (course_id, user_id), (user_id, created_at) 등 16개 → JOIN 포함 조회 속도 향상\n" +
+  "커넥션 풀 설정 · 불필요한 SELECT * 제거 · N+1 쿼리 패턴 리팩토링");
+infoBox(416, 80, C.green,
+  "프론트 최적화 상세",
+  "Next.js 14 SSR: 초기 로딩 시 서버에서 HTML 완성 → FCP 단축 · SEO 개선\n" +
+  "next/image 자동 최적화 · dynamic import 번들 분리 · Vercel Edge Cache 활용 · 빌드 5.6 MB");
+
+// ─────────────────────────────────────────────────────────────
+// 10  배포
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(10);
+label("Deployment");
+heading("프론트는 Vercel,\n백엔드는 AWS EC2.");
+body("git push 한 번으로 Vercel이 자동 빌드·배포합니다. 백엔드는 Docker로 EC2에서 실행됩니다.");
+card(42,  180, 374, 250, C.green, "Frontend — Vercel",
+  "GitHub main 브랜치 push → 자동 빌드 시작\nNext.js 14 SSR 빌드 · 빌드 실패 시 배포 차단\nEdge Network CDN 자동 적용\n\n배포 URL\nhttps://totalcode-devfocus.vercel.app");
+card(426, 180, 374, 250, C.coral, "Backend — AWS EC2",
+  "Docker 컨테이너로 Express 서버 실행\nMySQL도 Docker Compose로 함께 관리\n/health 엔드포인트로 생존 확인\n\n서버 주소\nhttp://13.125.181.228:3001");
+infoBox(444, 65, C.blue, "환경 분리",
+  "프론트 .env: NEXT_PUBLIC_API_URL · NEXT_PUBLIC_TOSS_CLIENT_KEY (Vercel 환경변수)\n" +
+  "백엔드 .env: DB_PASSWORD · TOSS_SECRET_KEY · DISCORD_WEBHOOK_URL · SMTP (EC2 .env.production)");
+
+// ─────────────────────────────────────────────────────────────
+// 11  수치로 검증
+// ─────────────────────────────────────────────────────────────
 newSlide(); footer(11);
 label("Validation");
-heading("기능은 만들었고,\n성능 개선도 수치로 확인했습니다.");
-body("프론트 번들 빌드와 백엔드 API, 그리고 응답 지연 구간을 함께 점검했습니다.", 170);
-["Frontend build", "Backend tests", "API latency", "PPT / Git bundle"].forEach((t, i) => {
-  const y = 255 + i * 50;
-  doc.fillColor(C.gray).font("Helvetica").fontSize(14).text(t, 54, y, { width: 260 });
-  doc.moveTo(350, y + 10).lineTo(700, y + 10).stroke(C.line);
-  doc.fillColor(C.green).font("Helvetica-Bold").fontSize(14).text(["PASS", "3 PASS", "LOWER", "VERIFIED"][i], 705, y, { width: 82, align: "right" });
-});
-
-// 12 deployment complete
-newSlide(); footer(12);
-label("Deployment");
-heading("공개 배포와\n운영 전환을 완료했습니다.");
-body("Vercel 자동 재배포와 AWS 백엔드, MySQL, 결제 연동, 모니터링 구성을 모두 연결했고, 렌더링과 응답 경로도 정리했습니다.");
-card(42, 250, 245, 155, C.green, "Frontend", "Vercel Git 연동 · main push 자동 재배포 · 렌더링 최적화");
-card(298, 250, 245, 155, C.coral, "Backend", "AWS Docker 배포 · Health · Metrics · DB 조회 최적화");
-card(554, 250, 245, 155, C.blue, "Payments", "Toss 승인·취소 · Webhook 검증 · 수강 등록");
-
-// 13 roadmap
-newSlide(); footer(13);
-label("Roadmap");
-heading("다음 목표는 기능 추가보다\n실제 운영의 완성입니다.");
+heading("P3에서 추가된 것을\n수치로 정리했습니다.", 52, false, 22, 680);
+body("스케줄러 4개 · 알림 2채널 · Webhook HMAC · /health·/metrics · 보안 5종 · 인덱스 16개 · 배포 완료");
+doc.moveTo(42, 174).lineTo(W - 42, 174).lineWidth(1).stroke(C.line);
 [
-  ["01", "PUBLIC", "공개 배포와 결제 E2E"],
-  ["02", "RELIABLE", "CI/CD, 백업, 알림 재시도"],
-  ["03", "PERSONAL", "추천, 퀴즈, 수료증"],
-  ["04", "SCALE", "쿠폰, 부분환불, 정산 고도화"],
-].forEach((row, i) => {
-  const x = 42 + i * 190;
-  doc.fillColor(C.coral).font("Helvetica-Bold").fontSize(10).text(row[0], x, 300);
-  doc.fillColor(C.ink).font("Helvetica-Bold").fontSize(15).text(row[1], x, 324);
-  doc.fillColor(C.gray).font("Helvetica").fontSize(11).text(row[2], x, 350, { width: 150 });
+  { x: 42,  color: C.coral,  bg: "#FFF1F1", value: "4개",   sub: "Cron Job",       desc: "결제만료·세션·정산·리포트\njob_logs 100% 기록" },
+  { x: 240, color: C.blue,   bg: "#EEF2FF", value: "2채널", sub: "알림",           desc: "Discord Webhook\nSMTP 이메일" },
+  { x: 438, color: C.green,  bg: "#F0FBF6", value: "HMAC",  sub: "Webhook 검증",   desc: "SHA-256 서명 검증\n멱등성·재생 공격 방어" },
+  { x: 636, color: C.yellow, bg: "#FFFBEE", value: "16개",  sub: "DB 인덱스",      desc: "복합 인덱스 추가\nJOIN 쿼리 최적화" },
+].forEach(m => {
+  doc.roundedRect(m.x, 184, 183, 215, 12).fillAndStroke(m.bg, C.line);
+  doc.rect(m.x, 184, 5, 215).fill(m.color);
+  doc.fillColor(m.color).font("KR-Bold").fontSize(34).text(m.value, m.x + 14, 200, { width: 160, align: "center" });
+  doc.fillColor(C.ink).font("KR-Bold").fontSize(12).text(m.sub,    m.x + 14, 248, { width: 160, align: "center" });
+  doc.fillColor(C.gray).font("KR").fontSize(10).text(m.desc,       m.x + 14, 270, { width: 160, align: "center", lineGap: 3 });
+});
+doc.moveTo(42, 412).lineTo(W - 42, 412).lineWidth(1).stroke(C.line);
+[
+  ["결제 모듈",    "Toss 데모 · HMAC Webhook"],
+  ["스케줄러",     "4개 배치 · job_logs"],
+  ["모니터링",     "/health · /metrics · winston"],
+  ["보안",        "SQL · XSS · Helmet · Rate Limit"],
+].forEach(([title, detail], i) => {
+  const x = 42 + i * 200;
+  doc.fillColor(C.ink).font("KR-Bold").fontSize(11).text(title,  x, 424, { width: 190 });
+  doc.fillColor(C.gray).font("KR").fontSize(9.5).text(detail,    x, 444, { width: 190, lineGap: 2 });
+  doc.circle(x + 188, 430, 5).fill(C.green);
 });
 
-// 14 close
+// ─────────────────────────────────────────────────────────────
+// 12  다음 목표
+// ─────────────────────────────────────────────────────────────
+newSlide(); footer(12);
+label("Next Steps");
+heading("구조는 완성됐습니다.\n설정만 바꾸면 실서비스입니다.");
+[
+  ["01", "실결제 전환",   "Toss 라이브 키 발급\nclientKey·secretKey 교체\n결제 E2E 테스트 통과\n프로덕션 배포",    C.coral],
+  ["02", "알림 활성화",  "Discord Webhook URL 등록\nSMTP 계정 설정\n실발송 테스트 완료\n에러·정산 알림 연동",              C.blue],
+  ["03", "CI/CD 구축",  "GitHub Actions 파이프라인\nDocker 자동 빌드·배포\n테스트 통과 후 자동 반영\n배포 알림 연동",      C.green],
+  ["04", "기능 확장",   "쿠폰·부분환불 모듈\n학습 추천 엔진\nGrafana 모니터링 연동\n퀴즈·수료증 발급",                    C.yellow],
+].forEach(([num, title, desc, color], i) => {
+  const x = 42 + i * 200;
+  doc.roundedRect(x, 148, 185, 345, 12).fillAndStroke(C.paper, C.line);
+  doc.rect(x, 148, 5, 345).fill(color);
+  doc.fillColor(color).font("KR-Bold").fontSize(11).text(num,   x + 18, 166);
+  doc.fillColor(C.ink).font("KR-Bold").fontSize(15).text(title, x + 18, 188, { width: 155 });
+  doc.fillColor(C.gray).font("KR").fontSize(11).text(desc,      x + 18, 222, { width: 155, lineGap: 6 });
+});
+
+// ─────────────────────────────────────────────────────────────
+// 13  CLOSE
+// ─────────────────────────────────────────────────────────────
 newSlide(C.dark);
-doc.circle(736, 90, 110).fill(C.coral);
-doc.circle(750, 415, 58).fill(C.yellow);
-doc.fillColor(C.coral).font("Helvetica-Bold").fontSize(10).text("THANK YOU", 42, 42, { characterSpacing: 2 });
-doc.fillColor(C.paper).font("Helvetica-Bold").fontSize(32).text("배움이 멈추지 않도록.", 42, 100, { width: 380 });
-doc.fillColor("#D0D0D0").font("Helvetica").fontSize(15).text("DevFocus는 개발자가 강의를 발견한 순간부터 끝까지 완주하는 순간까지 함께합니다.", 42, 205, { width: 430, lineGap: 4 });
-doc.fillColor(C.coral).font("Helvetica-Bold").fontSize(20).text("Questions?", 42, 510);
+doc.circle(715, 72, 95).fill(C.coral);
+doc.circle(735, 380, 55).fill(C.yellow);
+doc.fillColor(C.coral).font("KR-Bold").fontSize(10)
+   .text("THANK YOU", 42, 38, { characterSpacing: 1.5 });
+doc.fillColor(C.paper).font("KR-Bold").fontSize(28)
+   .text("운영 준비가 된\nP3입니다.", 42, 95, { width: 400, lineGap: 5 });
+doc.fillColor("#B0B0B0").font("KR").fontSize(13)
+   .text("결제·스케줄러·알림·Webhook·모니터링·보안을 갖춘\n실서비스 수준의 백엔드를 P3에서 완성했습니다.", 42, 215, { width: 440, lineGap: 6 });
+doc.moveTo(42, 320).lineTo(320, 320).lineWidth(1).stroke("#444");
+doc.fillColor("#888").font("KR").fontSize(10)
+   .text("totalcode-devfocus.vercel.app  ·  13.125.181.228:3001", 42, 334);
+doc.fillColor(C.coral).font("KR-Bold").fontSize(18).text("Questions?", 42, 365);
 
 doc.end();
